@@ -7,7 +7,8 @@ import (
 )
 
 func main() {
-	bot, err := tgbotapi.NewBotAPI("5625272170:AAGQVFOEIh_aoRMUfB3vBXx6QrDBM5sLYro")
+	// TODO: добавить переменную из окружения
+	bot, err := tgbotapi.NewBotAPI("")
 	if err != nil {
 		log.Panic(err)
 	}
