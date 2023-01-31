@@ -1,0 +1,6 @@
+messages:
+  responses:
+    start: "START"
+    unknown_command: "Я не знаю такой команды :("
+  errors:
+    default: "Произошла неизвестная ошибка"
