@@ -8,7 +8,7 @@ import (
 const commandStart = "start"
 
 func (b *Bot) handleCommand(message *tgbotapi.Message) error {
-	msg := tgbotapi.NewMessage(message.Chat.ID, "Я не знаю такой команды :(")
+	msg := tgbotapi.NewMessage(message.Chat.ID, b.messages.UnknownCommand)
 
 	switch message.Command() {
 	case commandStart:

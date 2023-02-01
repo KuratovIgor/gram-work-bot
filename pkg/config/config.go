@@ -1,6 +1,8 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+)
 
 type Config struct {
 	TelegramToken string
@@ -22,23 +24,12 @@ type Responses struct {
 }
 
 func Init() (*Config, error) {
-	viper.AddConfigPath("configs")
-	viper.SetConfigName("name")
-
-	if err := viper.ReadInConfig(); err != nil {
+	if err := setUoViper(); err != nil {
 		return nil, err
 	}
 
 	var cfg Config
-	if err := viper.Unmarshal(&cfg); err != nil {
-		return nil, err
-	}
-
-	if err := viper.UnmarshalKey("messages.responses", &cfg.Messages.Responses); err != nil {
-		return nil, err
-	}
-
-	if err := viper.UnmarshalKey("messages.errors", &cfg.Messages.Errors); err != nil {
+	if err := unmarshal(&cfg); err != nil {
 		return nil, err
 	}
 
@@ -47,6 +38,29 @@ func Init() (*Config, error) {
 	}
 
 	return &cfg, nil
+}
+
+func setUoViper() error {
+	viper.AddConfigPath("configs")
+	viper.SetConfigName("main")
+
+	return viper.ReadInConfig()
+}
+
+func unmarshal(cfg *Config) error {
+	if err := viper.Unmarshal(&cfg); err != nil {
+		return err
+	}
+
+	if err := viper.UnmarshalKey("messages.responses", &cfg.Messages.Responses); err != nil {
+		return err
+	}
+
+	if err := viper.UnmarshalKey("messages.errors", &cfg.Messages.Errors); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func parseEnv(cfg *Config) error {

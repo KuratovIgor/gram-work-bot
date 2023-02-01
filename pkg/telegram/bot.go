@@ -1,15 +1,17 @@
 package telegram
 
 import (
+	"github.com/KuratovIgor/gram-work-bot/pkg/config"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 type Bot struct {
-	bot *tgbotapi.BotAPI
+	bot      *tgbotapi.BotAPI
+	messages config.Messages
 }
 
-func NewBot(bot *tgbotapi.BotAPI) *Bot {
-	return &Bot{bot: bot}
+func NewBot(bot *tgbotapi.BotAPI, messages config.Messages) *Bot {
+	return &Bot{bot: bot, messages: messages}
 }
 
 func (b *Bot) Start() error {
