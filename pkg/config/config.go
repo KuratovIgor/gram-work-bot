@@ -2,7 +2,6 @@ package config
 
 import (
 	"github.com/spf13/viper"
-	"os"
 )
 
 type Config struct {
@@ -65,8 +64,6 @@ func unmarshal(cfg *Config) error {
 }
 
 func parseEnv(cfg *Config) error {
-	os.Setenv("TELEGRAM_TOKEN", "5625272170:AAGQVFOEIh_aoRMUfB3vBXx6QrDBM5sLYro")
-
 	if err := viper.BindEnv("telegram_token"); err != nil {
 		return err
 	}
