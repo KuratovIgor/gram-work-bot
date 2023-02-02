@@ -42,8 +42,8 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 		if update.Message.IsCommand() {
 			b.handleCommand(update.Message)
 			continue
+		} else {
+			b.handleCommandFromKeybord(update.Message)
 		}
-
-		b.handleMessage(update.Message)
 	}
 }
