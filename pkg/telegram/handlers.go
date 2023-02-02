@@ -36,7 +36,7 @@ func (b *Bot) handleCommandFromKeybord(message *tgbotapi.Message) error {
 
 	switch message.Text {
 	case commands[0]:
-		msg.Text = "Ищу вакансии..."
+		b.handleGetVacancies(&msg)
 		_, error := b.bot.Send(msg)
 		return error
 	case commands[1]:
@@ -64,4 +64,14 @@ func (b *Bot) handleMessage(message *tgbotapi.Message) {
 	msg := tgbotapi.NewMessage(message.Chat.ID, message.Text)
 
 	b.bot.Send(msg)
+}
+
+func (b *Bot) handleGetVacancies(message *tgbotapi.MessageConfig) {
+	_, err := getVacancies()
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	//log.Println(response)
 }
