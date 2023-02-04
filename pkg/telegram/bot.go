@@ -8,10 +8,11 @@ import (
 type Bot struct {
 	bot      *tgbotapi.BotAPI
 	messages config.Messages
+	mode     string
 }
 
 func NewBot(bot *tgbotapi.BotAPI, messages config.Messages) *Bot {
-	return &Bot{bot: bot, messages: messages}
+	return &Bot{bot: bot, messages: messages, mode: ""}
 }
 
 func (b *Bot) Start() error {
@@ -43,7 +44,23 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 			b.handleCommand(update.Message)
 			continue
 		} else {
-			b.handleCommandFromKeybord(update.Message)
+			b.handleBaseKeybord(update.Message)
+			b.handleVacanciesKeybord(update.Message)
+
+			if !Contains(baseCommands, update.Message.Text) &&
+				!Contains(vacanciesCommands, update.Message.Text) &&
+				b.mode != "" {
+				b.handleMessage(update.Message)
+			}
 		}
 	}
+}
+
+func Contains(a []string, x string) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
 }

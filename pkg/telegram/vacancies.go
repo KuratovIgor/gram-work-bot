@@ -1,29 +1,41 @@
 package telegram
 
 import (
-	"encoding/json"
 	"github.com/tidwall/gjson"
 	"io"
-	"log"
 	"net/http"
 )
 
 const baseURL = "https://api.hh.ru"
+const vacancies = "/vacancies"
 
-const vacancies = "/vacancies/1"
-
-func getVacancies() (any, error) {
-	res, _ := http.Get("https://api.hh.ru/vacancies")
+func getVacancies(params *Params) (Vacancies, error) {
+	res, _ := http.Get(baseURL + vacancies + params.getQueryString())
 	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
-	var response map[string]interface{}
-	json.Unmarshal(body, &response)
+
+	var vacancies Vacancies
 
 	value := gjson.Get(string(body), "items")
-	for _, name := range value.Array() {
-		log.Println(gjson.Get(name.String(), "name"))
-		break
+	for _, item := range value.Array() {
+		var vacancy Vacancy
+		vacancy.id = gjson.Get(item.String(), "id").String()
+		vacancy.name = gjson.Get(item.String(), "name").String()
+		vacancy.salary.from = gjson.Get(item.String(), "salary.from").String()
+		vacancy.salary.to = gjson.Get(item.String(), "salary.to").String()
+		vacancy.salary.currency = gjson.Get(item.String(), "salary.currency").String()
+		vacancy.address.city = gjson.Get(item.String(), "address.city").String()
+		vacancy.address.street = gjson.Get(item.String(), "address.street").String()
+		vacancy.address.building = gjson.Get(item.String(), "address.building").String()
+		vacancy.publishedAt = gjson.Get(item.String(), "published_at").String()
+		vacancy.employer = gjson.Get(item.String(), "employer.name").String()
+		vacancy.requirement = gjson.Get(item.String(), "snippet.requirement").String()
+		vacancy.responsibility = gjson.Get(item.String(), "snippet.responsibility").String()
+		vacancy.schedule = gjson.Get(item.String(), "schedule.name").String()
+		vacancy.alternateUrl = gjson.Get(item.String(), "alternate_url").String()
+
+		vacancies.items = append(vacancies.items, vacancy)
 	}
 
-	return nil, nil
+	return vacancies, nil
 }
