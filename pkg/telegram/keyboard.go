@@ -6,11 +6,10 @@ import (
 )
 
 // ГЛАВНЫЕ КОМАНДЫ
-var baseCommands = []string{"Поиск вакансий", "Создать резюме"}
+var baseCommands = []string{"Поиск вакансий"}
 var baseCommandsKeyboard = tgbotapi.NewReplyKeyboard(
 	tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton(baseCommands[0]),
-		tgbotapi.NewKeyboardButton(baseCommands[1]),
 	),
 )
 
@@ -97,6 +96,32 @@ func (b *Bot) openScheduleKeyboard(message *tgbotapi.Message) {
 	msg := tgbotapi.NewMessage(message.Chat.ID, "Укажите график")
 	msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 	msg.ReplyMarkup = scheduleCommandsKeyboard
+
+	if _, err := b.bot.Send(msg); err != nil {
+		log.Panic(err)
+	}
+}
+
+// КОМАНДЫ ДЛЯ ВЫБОРА ОПЫТА РАБОТЫ
+var experienceCommands = []string{"Нет опыта", "От 1 года до 3 лет", "От 3 лет до 6 лет", "Более 6 лет", "Вернуться"}
+var experienceCommandsKeyboard = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton(experienceCommands[0]),
+		tgbotapi.NewKeyboardButton(experienceCommands[1]),
+	),
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton(experienceCommands[2]),
+		tgbotapi.NewKeyboardButton(experienceCommands[3]),
+	),
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton(experienceCommands[4]),
+	),
+)
+
+func (b *Bot) openExperienceKeyboard(message *tgbotapi.Message) {
+	msg := tgbotapi.NewMessage(message.Chat.ID, "Укажите опыт работы")
+	msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
+	msg.ReplyMarkup = experienceCommandsKeyboard
 
 	if _, err := b.bot.Send(msg); err != nil {
 		log.Panic(err)

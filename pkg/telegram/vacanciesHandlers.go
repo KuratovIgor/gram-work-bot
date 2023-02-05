@@ -15,7 +15,6 @@ func (b *Bot) handleGetVacancies(message *tgbotapi.Message) error {
 	for _, item := range vacancies.Items {
 		var buttons = tgbotapi.NewInlineKeyboardMarkup(
 			tgbotapi.NewInlineKeyboardRow(
-				tgbotapi.NewInlineKeyboardButtonData("Откликнуться", "Откликнуться"),
 				tgbotapi.NewInlineKeyboardButtonURL("Перейти", item.AlternateUrl),
 			),
 		)

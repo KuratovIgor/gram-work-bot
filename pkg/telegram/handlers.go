@@ -50,7 +50,18 @@ func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 			msg.Text = "Ты ввел неизвестный график :("
 			b.bot.Send(msg)
 		} else {
-			params.SetSchedule(getScheduleId(message.Text))
+			params.SetSchedule(scheduleId)
+			error := b.handleGetVacancies(message)
+			return error
+		}
+	case "experience":
+		experienceId := getExperienceId(message.Text)
+
+		if experienceId == "unknown" {
+			msg.Text = "Ты ввел неизвестный опыт работы :("
+			b.bot.Send(msg)
+		} else {
+			params.SetExperience(experienceId)
 			error := b.handleGetVacancies(message)
 			return error
 		}
@@ -71,16 +82,32 @@ func SearchAreaByName(name string) string {
 
 func getScheduleId(schedule string) string {
 	switch schedule {
-	case "Полный день":
+	case scheduleCommands[0]:
 		return "fullDay"
-	case "Сменный график":
+	case scheduleCommands[1]:
 		return "shift"
-	case "Гибкий график":
+	case scheduleCommands[2]:
 		return "flexible"
-	case "Удаленная работа":
+	case scheduleCommands[3]:
 		return "remote"
-	case "Вахтовый метод":
+	case scheduleCommands[4]:
 		return "flyInFlyOut"
+	}
+
+	return "unknown"
+}
+
+func getExperienceId(experience string) string {
+	switch experience {
+	case experienceCommands[0]:
+		return "noExperience"
+	case experienceCommands[1]:
+		return "between1And3"
+	case experienceCommands[2]:
+		return "between3And6"
+	case experienceCommands[3]:
+		return "moreThan6"
+
 	}
 
 	return "unknown"

@@ -3,17 +3,11 @@ package telegram
 import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 
 func (b *Bot) handleBaseKeyboard(message *tgbotapi.Message) error {
-	msg := tgbotapi.NewMessage(message.Chat.ID, b.messages.UnknownCommand)
-
 	switch message.Text {
 	case baseCommands[0]:
 		params.SetPage(0)
 		error := b.handleGetVacancies(message)
 		b.openVacanciesKeyboard(message)
-		return error
-	case baseCommands[1]:
-		msg.Text = "Создаем резюме..."
-		_, error := b.bot.Send(msg)
 		return error
 	}
 
@@ -53,6 +47,8 @@ func (b *Bot) handleFiltersKeyboard(message *tgbotapi.Message) error {
 		b.mode = "area"
 	case filterCommands[2]:
 		b.openScheduleKeyboard(message)
+	case filterCommands[3]:
+		b.openExperienceKeyboard(message)
 	case filterCommands[4]:
 		params.ClearFilters()
 		b.mode = ""
@@ -68,13 +64,27 @@ func (b *Bot) handleFiltersKeyboard(message *tgbotapi.Message) error {
 
 func (b *Bot) handleScheduleKeyboard(message *tgbotapi.Message) error {
 	switch message.Text {
-	case scheduleCommands[5]:
-		b.mode = ""
-		b.openFilterKeyboard(message)
 	case scheduleCommands[0], scheduleCommands[1], scheduleCommands[2], scheduleCommands[3], scheduleCommands[4]:
 		msg := tgbotapi.NewMessage(message.Chat.ID, message.Text)
 		b.mode = "schedule"
 		b.bot.Send(msg)
+	case scheduleCommands[5]:
+		b.mode = ""
+		b.openFilterKeyboard(message)
+	}
+
+	return nil
+}
+
+func (b *Bot) handleExperienceKeyboard(message *tgbotapi.Message) error {
+	switch message.Text {
+	case experienceCommands[0], experienceCommands[1], experienceCommands[2], experienceCommands[3]:
+		msg := tgbotapi.NewMessage(message.Chat.ID, message.Text)
+		b.mode = "experience"
+		b.bot.Send(msg)
+	case experienceCommands[4]:
+		b.mode = ""
+		b.openFilterKeyboard(message)
 	}
 
 	return nil

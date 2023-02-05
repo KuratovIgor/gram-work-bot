@@ -50,6 +50,7 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 			b.handleVacanciesKeyboard(update.Message)
 			b.handleFiltersKeyboard(update.Message)
 			b.handleScheduleKeyboard(update.Message)
+			b.handleExperienceKeyboard(update.Message)
 
 			if !Contains(baseCommands, update.Message.Text) &&
 				!Contains(vacanciesCommands, update.Message.Text) &&
