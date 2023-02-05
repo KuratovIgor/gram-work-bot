@@ -38,7 +38,7 @@ var vacanciesCommandsKeyboard = tgbotapi.NewReplyKeyboard(
 )
 
 func (b *Bot) openVacanciesKeyboard(message *tgbotapi.Message) {
-	msg := tgbotapi.NewMessage(message.Chat.ID, "-------------------------------------------------------")
+	msg := tgbotapi.NewMessage(message.Chat.ID, "Выбери действие")
 	msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 	msg.ReplyMarkup = vacanciesCommandsKeyboard
 
@@ -48,7 +48,7 @@ func (b *Bot) openVacanciesKeyboard(message *tgbotapi.Message) {
 }
 
 // КОМАНДЫ ДЛЯ ФИЛЬТРАЦИИ ВАКАНСИЙ
-var filterCommands = []string{"Зарплата", "Местоположение", "График", "Опыт работы", "Сбросить фильтры", "Назад"}
+var filterCommands = []string{"Зарплата", "Местоположение", "График", "Опыт работы", "Сбросить фильтры", "К вакансиям"}
 var filterCommandsKeyboard = tgbotapi.NewReplyKeyboard(
 	tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton(filterCommands[0]),
@@ -70,6 +70,33 @@ func (b *Bot) openFilterKeyboard(message *tgbotapi.Message) {
 	msg := tgbotapi.NewMessage(message.Chat.ID, "Выберите параметр для фильтрации")
 	msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 	msg.ReplyMarkup = filterCommandsKeyboard
+
+	if _, err := b.bot.Send(msg); err != nil {
+		log.Panic(err)
+	}
+}
+
+// КОМАНДЫ ДЛЯ ВЫБОРА ГРАФИКА
+var scheduleCommands = []string{"Полный день", "Сменный график", "Гибкий график", "Удаленная работа", "Вахтовый метод", "К фильтрам"}
+var scheduleCommandsKeyboard = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton(scheduleCommands[0]),
+		tgbotapi.NewKeyboardButton(scheduleCommands[1]),
+	),
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton(scheduleCommands[2]),
+		tgbotapi.NewKeyboardButton(scheduleCommands[3]),
+		tgbotapi.NewKeyboardButton(scheduleCommands[4]),
+	),
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton(scheduleCommands[5]),
+	),
+)
+
+func (b *Bot) openScheduleKeyboard(message *tgbotapi.Message) {
+	msg := tgbotapi.NewMessage(message.Chat.ID, "Укажите график")
+	msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
+	msg.ReplyMarkup = scheduleCommandsKeyboard
 
 	if _, err := b.bot.Send(msg); err != nil {
 		log.Panic(err)

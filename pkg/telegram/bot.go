@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	"github.com/KuratovIgor/gram-work-bot/pkg/api"
 	"github.com/KuratovIgor/gram-work-bot/pkg/config"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
@@ -22,6 +23,7 @@ func (b *Bot) Start() error {
 		return err
 	}
 
+	api.GetAllAreas()
 	b.handleUpdates(updates)
 
 	return nil
@@ -47,6 +49,7 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 			b.handleBaseKeyboard(update.Message)
 			b.handleVacanciesKeyboard(update.Message)
 			b.handleFiltersKeyboard(update.Message)
+			b.handleScheduleKeyboard(update.Message)
 
 			if !Contains(baseCommands, update.Message.Text) &&
 				!Contains(vacanciesCommands, update.Message.Text) &&

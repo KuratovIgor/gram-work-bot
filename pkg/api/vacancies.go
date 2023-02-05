@@ -4,23 +4,27 @@ import (
 	"github.com/KuratovIgor/gram-work-bot/pkg/types"
 	"github.com/tidwall/gjson"
 	"io"
+	"log"
 	"net/http"
 )
 
 const baseURL = "https://api.hh.ru"
-const vacancies = "/vacancies"
+const vacanciesURL = "/vacancies"
+const areaURL = "/areas"
 
 type VacanciesApiType struct {
 	baseURL      string
 	vacanciesURL string
+	areaURL      string
 }
 
 func newVacanciesApi() *VacanciesApiType {
-	return &VacanciesApiType{baseURL: baseURL, vacanciesURL: vacancies}
+	return &VacanciesApiType{baseURL: baseURL, vacanciesURL: vacanciesURL, areaURL: areaURL}
 }
 
 func (v *VacanciesApiType) GetVacancies(params *Params) (types.Vacancies, error) {
-	res, _ := http.Get(baseURL + vacancies + params.GetQueryString())
+	log.Println(baseURL + vacanciesURL + params.GetQueryString())
+	res, _ := http.Get(baseURL + vacanciesURL + params.GetQueryString())
 	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
 
@@ -43,6 +47,7 @@ func (v *VacanciesApiType) GetVacancies(params *Params) (types.Vacancies, error)
 		vacancy.Responsibility = gjson.Get(item.String(), "snippet.responsibility").String()
 		vacancy.Schedule = gjson.Get(item.String(), "schedule.name").String()
 		vacancy.AlternateUrl = gjson.Get(item.String(), "alternate_url").String()
+		vacancy.Area = gjson.Get(item.String(), "area.name").String()
 
 		vacancies.Items = append(vacancies.Items, vacancy)
 	}

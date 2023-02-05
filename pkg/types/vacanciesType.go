@@ -17,6 +17,7 @@ type Vacancy struct {
 	Responsibility string
 	Schedule       string
 	AlternateUrl   string
+	Area           string
 }
 
 type Address struct {

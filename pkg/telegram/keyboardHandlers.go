@@ -47,6 +47,12 @@ func (b *Bot) handleFiltersKeyboard(message *tgbotapi.Message) error {
 		msg := tgbotapi.NewMessage(message.Chat.ID, "Введите сумму в рублях")
 		b.bot.Send(msg)
 		b.mode = "salary"
+	case filterCommands[1]:
+		msg := tgbotapi.NewMessage(message.Chat.ID, "Введите название города")
+		b.bot.Send(msg)
+		b.mode = "area"
+	case filterCommands[2]:
+		b.openScheduleKeyboard(message)
 	case filterCommands[4]:
 		params.ClearFilters()
 		b.mode = ""
@@ -55,6 +61,20 @@ func (b *Bot) handleFiltersKeyboard(message *tgbotapi.Message) error {
 	case filterCommands[5]:
 		b.mode = ""
 		b.openVacanciesKeyboard(message)
+	}
+
+	return nil
+}
+
+func (b *Bot) handleScheduleKeyboard(message *tgbotapi.Message) error {
+	switch message.Text {
+	case scheduleCommands[5]:
+		b.mode = ""
+		b.openFilterKeyboard(message)
+	case scheduleCommands[0], scheduleCommands[1], scheduleCommands[2], scheduleCommands[3], scheduleCommands[4]:
+		msg := tgbotapi.NewMessage(message.Chat.ID, message.Text)
+		b.mode = "schedule"
+		b.bot.Send(msg)
 	}
 
 	return nil
