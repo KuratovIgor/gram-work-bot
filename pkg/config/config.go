@@ -2,10 +2,14 @@ package config
 
 import (
 	"github.com/spf13/viper"
+	"os"
 )
 
 type Config struct {
 	TelegramToken string
+	RedirectURI   string
+	ClientID      string
+	ClientSecret  string
 	Messages      Messages
 }
 
@@ -64,11 +68,31 @@ func unmarshal(cfg *Config) error {
 }
 
 func parseEnv(cfg *Config) error {
+	os.Setenv("TELEGRAM_TOKEN", "5625272170:AAGQVFOEIh_aoRMUfB3vBXx6QrDBM5sLYro")
+	os.Setenv("REDIRECT_URI", "http://localhost")
+	os.Setenv("CLIENT_ID", "P3PD344RTN89887V9SQJB24QNA0U06SPP3JG6TSR59SKMQ1191C8VHRJLC17RO0D")
+	os.Setenv("CLIENT_SECRET", "SMIR5S7AK9P7FMOE4MRLJ291N4939TTM5BO9RGM7NOFSEC9RSMF6CCD50TVFBQUS")
+
 	if err := viper.BindEnv("telegram_token"); err != nil {
 		return err
 	}
 
+	if err := viper.BindEnv("redirect_uri"); err != nil {
+		return err
+	}
+
+	if err := viper.BindEnv("client_id"); err != nil {
+		return err
+	}
+
+	if err := viper.BindEnv("client_secret"); err != nil {
+		return err
+	}
+
 	cfg.TelegramToken = viper.GetString("telegram_token")
+	cfg.RedirectURI = viper.GetString("redirect_uri")
+	cfg.ClientID = viper.GetString("client_id")
+	cfg.ClientSecret = viper.GetString("client_secret")
 
 	return nil
 }
