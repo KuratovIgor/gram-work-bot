@@ -46,3 +46,32 @@ func (b *Bot) openVacanciesKeyboard(message *tgbotapi.Message) {
 		log.Panic(err)
 	}
 }
+
+// КОМАНДЫ ДЛЯ ФИЛЬТРАЦИИ ВАКАНСИЙ
+var filterCommands = []string{"Зарплата", "Местоположение", "График", "Опыт работы", "Сбросить фильтры", "Назад"}
+var filterCommandsKeyboard = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton(filterCommands[0]),
+		tgbotapi.NewKeyboardButton(filterCommands[1]),
+	),
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton(filterCommands[2]),
+		tgbotapi.NewKeyboardButton(filterCommands[3]),
+	),
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton(filterCommands[4]),
+	),
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton(filterCommands[5]),
+	),
+)
+
+func (b *Bot) openFilterKeyboard(message *tgbotapi.Message) {
+	msg := tgbotapi.NewMessage(message.Chat.ID, "Выберите параметр для фильтрации")
+	msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
+	msg.ReplyMarkup = filterCommandsKeyboard
+
+	if _, err := b.bot.Send(msg); err != nil {
+		log.Panic(err)
+	}
+}

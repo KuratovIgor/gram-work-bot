@@ -44,11 +44,13 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 			b.handleCommand(update.Message)
 			continue
 		} else {
-			b.handleBaseKeybord(update.Message)
-			b.handleVacanciesKeybord(update.Message)
+			b.handleBaseKeyboard(update.Message)
+			b.handleVacanciesKeyboard(update.Message)
+			b.handleFiltersKeyboard(update.Message)
 
 			if !Contains(baseCommands, update.Message.Text) &&
 				!Contains(vacanciesCommands, update.Message.Text) &&
+				!Contains(filterCommands, update.Message.Text) &&
 				b.mode != "" {
 				b.handleMessage(update.Message)
 			}
