@@ -3,19 +3,19 @@ package telegram
 import (
 	"github.com/KuratovIgor/gram-work-bot/pkg/api"
 	"github.com/KuratovIgor/gram-work-bot/pkg/config"
+	"github.com/KuratovIgor/gram-work-bot/pkg/repository"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-const authURI = "https://hh.ru/oauth/authorize"
-
 type Bot struct {
-	bot      *tgbotapi.BotAPI
-	messages config.Messages
-	mode     string
+	bot             *tgbotapi.BotAPI
+	messages        config.Messages
+	mode            string
+	tokenRepository repository.TokenRepository
 }
 
-func NewBot(bot *tgbotapi.BotAPI, messages config.Messages) *Bot {
-	return &Bot{bot: bot, messages: messages, mode: ""}
+func NewBot(bot *tgbotapi.BotAPI, messages config.Messages, tr repository.TokenRepository) *Bot {
+	return &Bot{bot: bot, messages: messages, mode: "", tokenRepository: tr}
 }
 
 func (b *Bot) Start() error {
@@ -72,7 +72,7 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 }
 
 func (b *Bot) Login(config *config.Config, message *tgbotapi.Message) {
-	fullAuthURI := authURI + "?response_type=code&client_id=" + config.ClientID
+	fullAuthURI := b.generateAuthorizationLink(config)
 
 	var button = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
