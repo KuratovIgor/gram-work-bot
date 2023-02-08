@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"github.com/KuratovIgor/gram-work-bot/pkg/api"
+	"github.com/KuratovIgor/gram-work-bot/pkg/config"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"strings"
 )
@@ -10,20 +11,31 @@ var params = api.NewParams()
 
 const commandStart = "start"
 
-func (b *Bot) handleCommand(message *tgbotapi.Message) error {
+func (b *Bot) handleCommand(message *tgbotapi.Message, config *config.Config) error {
 	msg := tgbotapi.NewMessage(message.Chat.ID, b.messages.UnknownCommand)
 
 	switch message.Command() {
 	case commandStart:
 		msg.Text = ""
 		params.ClearParams()
-		b.openBaseKeyboard(message)
-		_, error := b.bot.Send(msg)
-		return error
+		return b.handleStartCommand(message, config)
 	default:
 		_, error := b.bot.Send(msg)
 		return error
 	}
+}
+
+func (b *Bot) handleStartCommand(message *tgbotapi.Message, config *config.Config) error {
+	_, err := b.getAccessToken(message.Chat.ID)
+
+	if err != nil {
+		return b.initAuthorizationProcess(config, message)
+	}
+
+	msg := tgbotapi.NewMessage(message.Chat.ID, "Ты уже авторизирован")
+	b.bot.Send(msg)
+	b.openBaseKeyboard(message)
+	return err
 }
 
 func (b *Bot) handleMessage(message *tgbotapi.Message) error {

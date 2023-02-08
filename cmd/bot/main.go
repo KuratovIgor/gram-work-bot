@@ -34,10 +34,10 @@ func main() {
 
 	telegramBot := telegram.NewBot(bot, cfg.Messages, tokenRepository)
 
-	authorizationServer := server.NewAuthorizationServer(tokenRepository, "https://t.me/gram_work_bot")
+	authorizationServer := server.NewAuthorizationServer(tokenRepository, "https://t.me/gram_work_bot", cfg)
 
 	go func() {
-		if err := telegramBot.Start(); err != nil {
+		if err := telegramBot.Start(cfg); err != nil {
 			log.Fatal(err)
 		}
 	}()
@@ -60,7 +60,7 @@ func initDB() (*bolt.DB, error) {
 			return err
 		}
 
-		_, err2 := tx.CreateBucketIfNotExists([]byte(repository.RequestTokens))
+		_, err2 := tx.CreateBucketIfNotExists([]byte(repository.RefreshToken))
 		if err != nil {
 			return err2
 		}

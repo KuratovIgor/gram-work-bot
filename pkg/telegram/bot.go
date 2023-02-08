@@ -18,7 +18,7 @@ func NewBot(bot *tgbotapi.BotAPI, messages config.Messages, tr repository.TokenR
 	return &Bot{bot: bot, messages: messages, mode: "", tokenRepository: tr}
 }
 
-func (b *Bot) Start() error {
+func (b *Bot) Start(config *config.Config) error {
 	updates, err := b.initUpdatesChannel()
 
 	if err != nil {
@@ -26,7 +26,7 @@ func (b *Bot) Start() error {
 	}
 
 	api.GetAllAreas()
-	b.handleUpdates(updates)
+	b.handleUpdates(updates, config)
 
 	return nil
 }
@@ -38,52 +38,37 @@ func (b *Bot) initUpdatesChannel() (tgbotapi.UpdatesChannel, error) {
 	return b.bot.GetUpdatesChan(u)
 }
 
-var isLogin = false
-
-func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
+func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel, cfg *config.Config) {
 	for update := range updates {
-		if isLogin == false {
-			cfg, _ := config.Init()
-			b.Login(cfg, update.Message)
+		_, err := b.getAccessToken(update.Message.Chat.ID)
+
+		if err != nil {
+			b.initAuthorizationProcess(cfg, update.Message)
+			continue
+		}
+
+		if update.Message == nil {
+			continue
+		}
+
+		if update.Message.IsCommand() {
+			b.handleCommand(update.Message, cfg)
+			continue
 		} else {
-			if update.Message == nil {
-				continue
-			}
+			b.handleBaseKeyboard(update.Message)
+			b.handleVacanciesKeyboard(update.Message)
+			b.handleFiltersKeyboard(update.Message)
+			b.handleScheduleKeyboard(update.Message)
+			b.handleExperienceKeyboard(update.Message)
 
-			if update.Message.IsCommand() {
-				b.handleCommand(update.Message)
-				continue
-			} else {
-				b.handleBaseKeyboard(update.Message)
-				b.handleVacanciesKeyboard(update.Message)
-				b.handleFiltersKeyboard(update.Message)
-				b.handleScheduleKeyboard(update.Message)
-				b.handleExperienceKeyboard(update.Message)
-
-				if !Contains(baseCommands, update.Message.Text) &&
-					!Contains(vacanciesCommands, update.Message.Text) &&
-					!Contains(filterCommands, update.Message.Text) &&
-					b.mode != "" {
-					b.handleMessage(update.Message)
-				}
+			if !Contains(baseCommands, update.Message.Text) &&
+				!Contains(vacanciesCommands, update.Message.Text) &&
+				!Contains(filterCommands, update.Message.Text) &&
+				b.mode != "" {
+				b.handleMessage(update.Message)
 			}
 		}
 	}
-}
-
-func (b *Bot) Login(config *config.Config, message *tgbotapi.Message) {
-	fullAuthURI := b.generateAuthorizationLink(config)
-
-	var button = tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonURL("Авторизироваться", fullAuthURI),
-		),
-	)
-
-	msg := tgbotapi.NewMessage(message.Chat.ID, "Привет!\nДля начала поиска тебе нужно авторизироваться.\nПожалуйста, перейди по ссылке, нажав на кнопку ниже.")
-	msg.ReplyMarkup = button
-
-	b.bot.Send(msg)
 }
 
 func Contains(a []string, x string) bool {
