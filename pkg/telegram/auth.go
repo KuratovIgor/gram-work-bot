@@ -18,7 +18,7 @@ func (b *Bot) initAuthorizationProcess(config *config.Config, message *tgbotapi.
 		),
 	)
 
-	msg := tgbotapi.NewMessage(message.Chat.ID, "Привет!\nДля начала поиска тебе нужно авторизироваться.\nПожалуйста, перейди по ссылке, нажав на кнопку ниже.")
+	msg := tgbotapi.NewMessage(message.Chat.ID, "Привет!\nДля начала поиска тебе нужно авторизироваться.\nПожалуйста, перейди по ссылке, нажав на кнопку ниже.\n\nПосле авторизации введи команду /start для начала работы.")
 	msg.ReplyMarkup = button
 
 	_, err := b.bot.Send(msg)

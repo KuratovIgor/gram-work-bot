@@ -32,8 +32,6 @@ func (b *Bot) handleStartCommand(message *tgbotapi.Message, config *config.Confi
 		return b.initAuthorizationProcess(config, message)
 	}
 
-	msg := tgbotapi.NewMessage(message.Chat.ID, "Ты уже авторизирован")
-	b.bot.Send(msg)
 	b.openBaseKeyboard(message)
 	return err
 }

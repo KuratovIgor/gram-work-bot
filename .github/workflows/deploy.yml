@@ -28,6 +28,11 @@ jobs:
           envkey_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
           directory: .
 
+      - name: Build and push container
+        run: |
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.IMAGE_NAME }} .
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.IMAGE_NAME }}
+
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -41,5 +46,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
-            docker pull kuratovia/gram-work-bot-image
-            docker run -d --name gram-work-bot -p 80:80 --env TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }} --env REDIRECT_URI=${{ secrets.REDIRECT_URI }} --env CLIENT_ID=${{ secrets.CLIENT_ID }} --env CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} kuratovia/gram-work-bot-image
+            docker stop ${{ secrets.CONTAINER_NAME }}
+            docker rm ${{ secrets.CONTAINER_NAME }}
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.IMAGE_NAME }}
+            docker run -d --name ${{ secrets.CONTAINER_NAME }} -p 80:80 --env TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }} --env REDIRECT_URI=${{ secrets.REDIRECT_URI }} --env CLIENT_ID=${{ secrets.CLIENT_ID }} --env CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.IMAGE_NAME }}
