@@ -6,6 +6,9 @@ import (
 
 type Config struct {
 	TelegramToken string
+	RedirectURI   string
+	ClientID      string
+	ClientSecret  string
 	Messages      Messages
 }
 
@@ -68,7 +71,22 @@ func parseEnv(cfg *Config) error {
 		return err
 	}
 
+	if err := viper.BindEnv("redirect_uri"); err != nil {
+		return err
+	}
+
+	if err := viper.BindEnv("client_id"); err != nil {
+		return err
+	}
+
+	if err := viper.BindEnv("client_secret"); err != nil {
+		return err
+	}
+
 	cfg.TelegramToken = viper.GetString("telegram_token")
+	cfg.RedirectURI = viper.GetString("redirect_uri")
+	cfg.ClientID = viper.GetString("client_id")
+	cfg.ClientSecret = viper.GetString("client_secret")
 
 	return nil
 }
