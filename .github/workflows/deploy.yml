@@ -42,4 +42,4 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             docker pull kuratovia/gram-work-bot-image
-            docker run -d --name gram-work-bot -p 80:80 --env-file .env kuratovia/gram-work-bot-image
+            docker run -d --name gram-work-bot -p 80:80 --env TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }} --env REDIRECT_URI=${{ secrets.REDIRECT_URI }} --env CLIENT_ID=${{ secrets.CLIENT_ID }} --env CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} kuratovia/gram-work-bot-image
