@@ -1,16 +1,11 @@
 package telegram
 
 import (
-	"github.com/KuratovIgor/gram-work-bot/pkg/api"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 func (b *Bot) handleGetVacancies(message *tgbotapi.Message) error {
-	vacancies, err := api.VacanciesApi.GetVacancies(params)
-
-	if err != nil {
-		return err
-	}
+	vacancies := b.client.GetVacancies()
 
 	for _, item := range vacancies.Items {
 		var buttons = tgbotapi.NewInlineKeyboardMarkup(

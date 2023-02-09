@@ -6,6 +6,7 @@ import (
 	"github.com/KuratovIgor/gram-work-bot/pkg/repository/boltdb"
 	"github.com/KuratovIgor/gram-work-bot/pkg/server"
 	"github.com/KuratovIgor/gram-work-bot/pkg/telegram"
+	headhunter "github.com/KuratovIgor/head_hunter_sdk"
 	"github.com/boltdb/bolt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
@@ -32,9 +33,14 @@ func main() {
 
 	tokenRepository := boltdb.NewTokenRepository(db)
 
-	telegramBot := telegram.NewBot(bot, cfg.Messages, tokenRepository)
+	headhunterClient, err := headhunter.NewClient(cfg.ClientID, cfg.ClientSecret, cfg.RedirectURI)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	authorizationServer := server.NewAuthorizationServer(tokenRepository, "https://t.me/gram_work_bot", cfg)
+	telegramBot := telegram.NewBot(bot, headhunterClient, cfg.Messages, tokenRepository)
+
+	authorizationServer := server.NewAuthorizationServer(tokenRepository, "https://t.me/gram_work_bot", headhunterClient)
 
 	go func() {
 		if err := telegramBot.Start(cfg); err != nil {
@@ -45,7 +51,6 @@ func main() {
 	if err := authorizationServer.Start(); err != nil {
 		log.Fatal(err)
 	}
-
 }
 
 func initDB() (*bolt.DB, error) {

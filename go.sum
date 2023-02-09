@@ -38,6 +38,12 @@ cloud.google.com/go/storage v1.14.0/go.mod h1:GrKmX003DSIwi9o29oFT7YDnHYwZoctc3f
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
+github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230209174201-ca1d36c85693 h1:Xd58diG03DHIs01PVQbkKQi1nyvrbmSD1prNUaMd7Bw=
+github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230209174201-ca1d36c85693/go.mod h1:AOPWFxoUPtae5iPaCyKXw0HWzAUwQ3TFAPWyPyjv1a8=
+github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230209180849-e6e3d38c649b h1:x+/2AOuUcS8q2XRnBn+zWl7VM4Gqtny34z1g+CvA5z8=
+github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230209180849-e6e3d38c649b/go.mod h1:AOPWFxoUPtae5iPaCyKXw0HWzAUwQ3TFAPWyPyjv1a8=
+github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230209182336-98c7d8322c8a h1:q5ruFTwZOsrkkqBQuRhXOfPiO+qR+QAWXiGqqOoU6/E=
+github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230209182336-98c7d8322c8a/go.mod h1:AOPWFxoUPtae5iPaCyKXw0HWzAUwQ3TFAPWyPyjv1a8=
 github.com/boltdb/bolt v1.3.1 h1:JQmyP4ZBrce+ZQu0dY660FMfatumYDLun9hBCUVIkF4=
 github.com/boltdb/bolt v1.3.1/go.mod h1:clJnj/oiGkjum5o1McbSZDSLxVThjynRyGBgiAx27Ps=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=

@@ -5,7 +5,7 @@ import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 func (b *Bot) handleBaseKeyboard(message *tgbotapi.Message) error {
 	switch message.Text {
 	case baseCommands[0]:
-		params.SetPage(0)
+		b.client.UrlParams.SetPage(0)
 		error := b.handleGetVacancies(message)
 		b.openVacanciesKeyboard(message)
 		return error
@@ -17,7 +17,7 @@ func (b *Bot) handleBaseKeyboard(message *tgbotapi.Message) error {
 func (b *Bot) handleVacanciesKeyboard(message *tgbotapi.Message) error {
 	switch message.Text {
 	case vacanciesCommands[0]:
-		params.SetPage(params.Page + 1)
+		b.client.UrlParams.SetPage(b.client.UrlParams.Page + 1)
 		error := b.handleGetVacancies(message)
 		return error
 	case vacanciesCommands[1]:
@@ -28,7 +28,7 @@ func (b *Bot) handleVacanciesKeyboard(message *tgbotapi.Message) error {
 		b.mode = "search"
 	case vacanciesCommands[3]:
 		b.mode = ""
-		params.ClearParams()
+		b.client.UrlParams.ClearParams()
 		b.openBaseKeyboard(message)
 	}
 
@@ -50,7 +50,7 @@ func (b *Bot) handleFiltersKeyboard(message *tgbotapi.Message) error {
 	case filterCommands[3]:
 		b.openExperienceKeyboard(message)
 	case filterCommands[4]:
-		params.ClearFilters()
+		b.client.UrlParams.ClearFilters()
 		b.mode = ""
 		error := b.handleGetVacancies(message)
 		return error

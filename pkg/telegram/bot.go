@@ -1,22 +1,31 @@
 package telegram
 
 import (
-	"github.com/KuratovIgor/gram-work-bot/pkg/api"
 	"github.com/KuratovIgor/gram-work-bot/pkg/config"
 	"github.com/KuratovIgor/gram-work-bot/pkg/repository"
+	headhunter "github.com/KuratovIgor/head_hunter_sdk"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 type Bot struct {
 	bot             *tgbotapi.BotAPI
+	client          *headhunter.Client
 	messages        config.Messages
 	mode            string
 	tokenRepository repository.TokenRepository
 }
 
-func NewBot(bot *tgbotapi.BotAPI, messages config.Messages, tr repository.TokenRepository) *Bot {
-	return &Bot{bot: bot, messages: messages, mode: "", tokenRepository: tr}
+func NewBot(bot *tgbotapi.BotAPI, client *headhunter.Client, messages config.Messages, tr repository.TokenRepository) *Bot {
+	return &Bot{
+		bot:             bot,
+		client:          client,
+		messages:        messages,
+		mode:            "",
+		tokenRepository: tr,
+	}
 }
+
+var AllAreas []headhunter.AreaType
 
 func (b *Bot) Start(config *config.Config) error {
 	updates, err := b.initUpdatesChannel()
@@ -25,7 +34,8 @@ func (b *Bot) Start(config *config.Config) error {
 		return err
 	}
 
-	api.GetAllAreas()
+	AllAreas, _ = b.client.GetAllAreas()
+
 	b.handleUpdates(updates, config)
 
 	return nil
@@ -43,7 +53,7 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel, cfg *config.Config)
 		_, err := b.getAccessToken(update.Message.Chat.ID)
 
 		if err != nil {
-			b.initAuthorizationProcess(cfg, update.Message)
+			b.initAuthorizationProcess(update.Message)
 			continue
 		}
 
@@ -52,7 +62,7 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel, cfg *config.Config)
 		}
 
 		if update.Message.IsCommand() {
-			b.handleCommand(update.Message, cfg)
+			b.handleCommand(update.Message)
 			continue
 		} else {
 			b.handleBaseKeyboard(update.Message)

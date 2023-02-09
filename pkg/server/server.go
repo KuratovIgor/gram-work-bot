@@ -1,11 +1,8 @@
 package server
 
 import (
-	"bytes"
-	"github.com/KuratovIgor/gram-work-bot/pkg/config"
 	"github.com/KuratovIgor/gram-work-bot/pkg/repository"
-	"github.com/tidwall/gjson"
-	"io"
+	headhunter "github.com/KuratovIgor/head_hunter_sdk"
 	"net/http"
 	"strconv"
 )
@@ -14,11 +11,11 @@ type AuthorizationServer struct {
 	server          *http.Server
 	tokenRepository repository.TokenRepository
 	redirectURL     string
-	config          *config.Config
+	client          *headhunter.Client
 }
 
-func NewAuthorizationServer(tokenRepository repository.TokenRepository, redirectURL string, config *config.Config) *AuthorizationServer {
-	return &AuthorizationServer{tokenRepository: tokenRepository, redirectURL: redirectURL, config: config}
+func NewAuthorizationServer(tokenRepository repository.TokenRepository, redirectURL string, client *headhunter.Client) *AuthorizationServer {
+	return &AuthorizationServer{tokenRepository: tokenRepository, redirectURL: redirectURL, client: client}
 }
 
 func (s *AuthorizationServer) Start() error {
@@ -43,28 +40,24 @@ func (s *AuthorizationServer) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	s.Authorize(s.config, chatID, authorizationCode)
-
-	w.Header().Add("Location", s.redirectURL)
-	w.WriteHeader(http.StatusMovedPermanently)
+	chatIdInt, _ := strconv.ParseInt(chatID, 10, 64)
+	err := s.Authorize(chatIdInt, authorizationCode)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+	} else {
+		w.Header().Add("Location", s.redirectURL)
+		w.WriteHeader(http.StatusMovedPermanently)
+	}
 }
 
-func (s *AuthorizationServer) Authorize(config *config.Config, chatID string, authCode string) {
-	const authURL = "https://hh.ru/oauth/token"
+func (s *AuthorizationServer) Authorize(chatID int64, authCode string) error {
+	response, err := s.client.Authorize(chatID, authCode)
+	if err != nil {
+		return err
+	}
 
-	urlParameters := "grant_type=authorization_code&client_id=" + config.ClientID + "&client_secret=" + config.ClientSecret + "&redirect_uri=" + config.RedirectURI + "/?chat_id=" + chatID + "&code=" + authCode
-	postData := []byte(urlParameters)
+	s.tokenRepository.Save(chatID, response.AccessToken, repository.AccessTokens)
+	s.tokenRepository.Save(chatID, response.RefreshToken, repository.RefreshToken)
 
-	r, _ := http.Post(authURL, "application/x-www-form-urlencoded", bytes.NewBuffer(postData))
-
-	defer r.Body.Close()
-	a, _ := io.ReadAll(r.Body)
-
-	accessToken := gjson.Get(string(a), "access_token").String()
-	refreshToken := gjson.Get(string(a), "refreshToken").String()
-
-	chatIdInt, _ := strconv.ParseInt(chatID, 10, 64)
-
-	s.tokenRepository.Save(chatIdInt, accessToken, repository.AccessTokens)
-	s.tokenRepository.Save(chatIdInt, refreshToken, repository.RefreshToken)
+	return nil
 }

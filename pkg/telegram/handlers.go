@@ -1,35 +1,31 @@
 package telegram
 
 import (
-	"github.com/KuratovIgor/gram-work-bot/pkg/api"
-	"github.com/KuratovIgor/gram-work-bot/pkg/config"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"strings"
 )
 
-var params = api.NewParams()
-
 const commandStart = "start"
 
-func (b *Bot) handleCommand(message *tgbotapi.Message, config *config.Config) error {
+func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 	msg := tgbotapi.NewMessage(message.Chat.ID, b.messages.UnknownCommand)
 
 	switch message.Command() {
 	case commandStart:
 		msg.Text = ""
-		params.ClearParams()
-		return b.handleStartCommand(message, config)
+		b.client.UrlParams.ClearParams()
+		return b.handleStartCommand(message)
 	default:
 		_, error := b.bot.Send(msg)
 		return error
 	}
 }
 
-func (b *Bot) handleStartCommand(message *tgbotapi.Message, config *config.Config) error {
+func (b *Bot) handleStartCommand(message *tgbotapi.Message) error {
 	_, err := b.getAccessToken(message.Chat.ID)
 
 	if err != nil {
-		return b.initAuthorizationProcess(config, message)
+		return b.initAuthorizationProcess(message)
 	}
 
 	b.openBaseKeyboard(message)
@@ -41,16 +37,16 @@ func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 
 	switch b.mode {
 	case "search":
-		params.SetSearch(msg.Text)
+		b.client.UrlParams.SetSearch(msg.Text)
 		error := b.handleGetVacancies(message)
 		return error
 	case "salary":
-		params.SetSalary(msg.Text)
+		b.client.UrlParams.SetSalary(msg.Text)
 		error := b.handleGetVacancies(message)
 		return error
 	case "area":
 		areaId := SearchAreaByName(msg.Text)
-		params.SetArea(areaId)
+		b.client.UrlParams.SetArea(areaId)
 		error := b.handleGetVacancies(message)
 		return error
 	case "schedule":
@@ -60,7 +56,7 @@ func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 			msg.Text = "Ты ввел неизвестный график :("
 			b.bot.Send(msg)
 		} else {
-			params.SetSchedule(scheduleId)
+			b.client.UrlParams.SetSchedule(scheduleId)
 			error := b.handleGetVacancies(message)
 			return error
 		}
@@ -71,7 +67,7 @@ func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 			msg.Text = "Ты ввел неизвестный опыт работы :("
 			b.bot.Send(msg)
 		} else {
-			params.SetExperience(experienceId)
+			b.client.UrlParams.SetExperience(experienceId)
 			error := b.handleGetVacancies(message)
 			return error
 		}
@@ -81,7 +77,7 @@ func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 }
 
 func SearchAreaByName(name string) string {
-	for _, area := range api.Areas {
+	for _, area := range AllAreas {
 		if strings.Contains(area.Name, name) {
 			return area.Id
 		}
