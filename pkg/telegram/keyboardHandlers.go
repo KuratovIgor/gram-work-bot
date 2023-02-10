@@ -6,7 +6,8 @@ func (b *Bot) handleBaseKeyboard(message *tgbotapi.Message) error {
 	switch message.Text {
 	case baseCommands[0]:
 		b.client.UrlParams.SetPage(0)
-		error := b.handleGetVacancies(message)
+		vacancies := b.client.GetVacancies()
+		error := b.displayVacancies(vacancies, message)
 		b.openVacanciesKeyboard(message)
 		return error
 	}
@@ -18,7 +19,8 @@ func (b *Bot) handleVacanciesKeyboard(message *tgbotapi.Message) error {
 	switch message.Text {
 	case vacanciesCommands[0]:
 		b.client.UrlParams.SetPage(b.client.UrlParams.Page + 1)
-		error := b.handleGetVacancies(message)
+		vacancies := b.client.GetVacancies()
+		error := b.displayVacancies(vacancies, message)
 		return error
 	case vacanciesCommands[1]:
 		b.openFilterKeyboard(message)
@@ -52,7 +54,8 @@ func (b *Bot) handleFiltersKeyboard(message *tgbotapi.Message) error {
 	case filterCommands[4]:
 		b.client.UrlParams.ClearFilters()
 		b.mode = ""
-		error := b.handleGetVacancies(message)
+		vacancies := b.client.GetVacancies()
+		error := b.displayVacancies(vacancies, message)
 		return error
 	case filterCommands[5]:
 		b.mode = ""
