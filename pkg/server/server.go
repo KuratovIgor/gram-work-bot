@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/KuratovIgor/gram-work-bot/pkg/repository"
 	headhunter "github.com/KuratovIgor/head_hunter_sdk"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -56,8 +57,22 @@ func (s *AuthorizationServer) Authorize(chatID int64, authCode string) error {
 		return err
 	}
 
+	log.Println("TOKEN ", response.AccessToken)
 	s.tokenRepository.Save(chatID, response.AccessToken, repository.AccessTokens)
 	s.tokenRepository.Save(chatID, response.RefreshToken, repository.RefreshToken)
+
+	return nil
+}
+
+func (s *AuthorizationServer) GetResumes(chatID int64) error {
+	token, err := s.tokenRepository.Get(chatID, repository.AccessTokens)
+	if err != nil {
+		return err
+	}
+
+	log.Println(token)
+	// TODO: Обращение к SDK. Получение списка резюме авторизированного пользователя
+	// TODO: Сохранение резюме в базу данных
 
 	return nil
 }

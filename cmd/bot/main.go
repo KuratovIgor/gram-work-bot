@@ -43,7 +43,7 @@ func main() {
 	authorizationServer := server.NewAuthorizationServer(tokenRepository, "https://t.me/gram_work_bot", headhunterClient)
 
 	go func() {
-		if err := telegramBot.Start(cfg); err != nil {
+		if err := telegramBot.Start(); err != nil {
 			log.Fatal(err)
 		}
 	}()

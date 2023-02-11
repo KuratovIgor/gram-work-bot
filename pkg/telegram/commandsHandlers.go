@@ -111,3 +111,25 @@ func (b *Bot) handleFilterByExperience(message *tgbotapi.Message) error {
 
 	return err
 }
+
+func (b *Bot) handleInlineCommand(update tgbotapi.Update) error {
+	return b.handleApplyToJob(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Data)
+}
+
+func (b *Bot) handleApplyToJob(chatID int64, vacancyId string) error {
+	msg := tgbotapi.NewMessage(chatID, "Ваш отклик успешно отправлен!")
+
+	resumeId := b.client.GetResumesIds()
+
+	err := b.client.ApplyToJob(vacancyId, resumeId[0], "")
+	if err != nil {
+		msg.Text = "Вы уже откликнулись на эту вакансию"
+	}
+
+	_, sendErr := b.bot.Send(msg)
+	if sendErr != nil {
+		return sendErr
+	}
+
+	return nil
+}

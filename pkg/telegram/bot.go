@@ -5,6 +5,7 @@ import (
 	"github.com/KuratovIgor/gram-work-bot/pkg/repository"
 	headhunter "github.com/KuratovIgor/head_hunter_sdk"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"log"
 )
 
 type Bot struct {
@@ -27,7 +28,7 @@ func NewBot(bot *tgbotapi.BotAPI, client *headhunter.Client, messages config.Mes
 
 var AllAreas []headhunter.AreaType
 
-func (b *Bot) Start(config *config.Config) error {
+func (b *Bot) Start() error {
 	updates, err := b.initUpdatesChannel()
 
 	if err != nil {
@@ -36,7 +37,7 @@ func (b *Bot) Start(config *config.Config) error {
 
 	AllAreas, _ = b.client.GetAllAreas()
 
-	b.handleUpdates(updates, config)
+	b.handleUpdates(updates)
 
 	return nil
 }
@@ -48,17 +49,30 @@ func (b *Bot) initUpdatesChannel() (tgbotapi.UpdatesChannel, error) {
 	return b.bot.GetUpdatesChan(u)
 }
 
-func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel, cfg *config.Config) {
+func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 	for update := range updates {
-		_, err := b.getAccessToken(update.Message.Chat.ID)
-
-		if err != nil {
-			b.initAuthorizationProcess(update.Message)
+		if update.CallbackQuery != nil {
+			b.handleInlineCommand(update)
 			continue
 		}
 
 		if update.Message == nil {
 			continue
+		}
+
+		_, err := b.getAccessToken(update.Message.Chat.ID)
+		if err != nil {
+			b.initAuthorizationProcess(update.Message)
+			continue
+		}
+
+		if !b.client.IsTokenExists() {
+			token, err := b.getAccessToken(update.Message.Chat.ID)
+			if err != nil {
+				log.Panic(err)
+			}
+
+			b.client.SetToken(token)
 		}
 
 		if update.Message.IsCommand() {
