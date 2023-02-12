@@ -52,7 +52,7 @@ func (b *Bot) handleSearch(message *tgbotapi.Message) error {
 	msg := tgbotapi.NewMessage(message.Chat.ID, message.Text)
 
 	b.client.UrlParams.SetSearch(msg.Text)
-	vacancies := b.client.GetVacancies()
+	vacancies, _ := b.client.GetVacancies()
 
 	return b.displayVacancies(vacancies, message)
 }
@@ -61,7 +61,7 @@ func (b *Bot) handleFilterBySalary(message *tgbotapi.Message) error {
 	msg := tgbotapi.NewMessage(message.Chat.ID, message.Text)
 
 	b.client.UrlParams.SetSalary(msg.Text)
-	vacancies := b.client.GetVacancies()
+	vacancies, _ := b.client.GetVacancies()
 
 	return b.displayVacancies(vacancies, message)
 }
@@ -71,7 +71,7 @@ func (b *Bot) handleFilterByArea(message *tgbotapi.Message) error {
 
 	areaId := searchAreaByName(msg.Text)
 	b.client.UrlParams.SetArea(areaId)
-	vacancies := b.client.GetVacancies()
+	vacancies, _ := b.client.GetVacancies()
 
 	return b.displayVacancies(vacancies, message)
 }
@@ -83,7 +83,7 @@ func (b *Bot) handleFilterBySchedule(message *tgbotapi.Message) error {
 
 	if scheduleId != "unknown" {
 		b.client.UrlParams.SetSchedule(scheduleId)
-		vacancies := b.client.GetVacancies()
+		vacancies, _ := b.client.GetVacancies()
 
 		return b.displayVacancies(vacancies, message)
 	}
@@ -101,7 +101,7 @@ func (b *Bot) handleFilterByExperience(message *tgbotapi.Message) error {
 
 	if experienceId != "unknown" {
 		b.client.UrlParams.SetExperience(experienceId)
-		vacancies := b.client.GetVacancies()
+		vacancies, _ := b.client.GetVacancies()
 
 		return b.displayVacancies(vacancies, message)
 	}
@@ -113,18 +113,59 @@ func (b *Bot) handleFilterByExperience(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleInlineCommand(update tgbotapi.Update) error {
-	return b.handleApplyToJob(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Data)
+	switch b.mode {
+	case "chooseResume":
+		return b.handleApplyToJobByResume(update.CallbackQuery.Message, update.CallbackQuery.Data)
+	case "apply":
+		return b.handleApplyToJob(update.CallbackQuery.Message, update.CallbackQuery.Data)
+	default:
+		return b.handleApplyToJob(update.CallbackQuery.Message, update.CallbackQuery.Data)
+	}
+
+	return nil
 }
 
-func (b *Bot) handleApplyToJob(chatID int64, vacancyId string) error {
-	msg := tgbotapi.NewMessage(chatID, "Ваш отклик успешно отправлен!")
+func (b *Bot) handleApplyToJob(message *tgbotapi.Message, vacancyId string) error {
+	msg := tgbotapi.NewMessage(message.Chat.ID, "Ваш отклик успешно отправлен!")
 
-	resumeId := b.client.GetResumesIds()
+	b.chosenResumeId = vacancyId
+	resumeIds, _ := b.client.GetResumesIds()
 
-	err := b.client.ApplyToJob(vacancyId, resumeId[0], "")
+	// Если пользователь выбрал сначала резюме, а не вакансию, то вакансии с id резюме не существует
+	if Contains(resumeIds, vacancyId) {
+		return nil
+	}
+
+	if len(resumeIds) > 1 {
+		return b.displayChoosingResume(message)
+	}
+
+	err := b.client.ApplyToJob(vacancyId, b.chosenResumeId, "")
 	if err != nil {
 		msg.Text = "Вы уже откликнулись на эту вакансию"
 	}
+
+	b.chosenResumeId = ""
+	b.mode = ""
+
+	_, sendErr := b.bot.Send(msg)
+	if sendErr != nil {
+		return sendErr
+	}
+
+	return nil
+}
+
+func (b *Bot) handleApplyToJobByResume(message *tgbotapi.Message, resumeId string) error {
+	msg := tgbotapi.NewMessage(message.Chat.ID, "Ваш отклик успешно отправлен!")
+
+	err := b.client.ApplyToJob(b.chosenResumeId, resumeId, "")
+	if err != nil {
+		msg.Text = "Вы уже откликнулись на эту вакансию"
+	}
+
+	b.chosenResumeId = ""
+	b.mode = ""
 
 	_, sendErr := b.bot.Send(msg)
 	if sendErr != nil {

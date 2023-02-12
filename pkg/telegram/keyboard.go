@@ -6,10 +6,11 @@ import (
 )
 
 // ГЛАВНЫЕ КОМАНДЫ
-var baseCommands = []string{"Поиск вакансий"}
+var baseCommands = []string{"Поиск вакансий", "Мои резюме"}
 var baseCommandsKeyboard = tgbotapi.NewReplyKeyboard(
 	tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton(baseCommands[0]),
+		tgbotapi.NewKeyboardButton(baseCommands[1]),
 	),
 )
 

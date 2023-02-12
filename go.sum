@@ -50,6 +50,8 @@ github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230211174311-84c535b7a2c5 h1:MdC
 github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230211174311-84c535b7a2c5/go.mod h1:AOPWFxoUPtae5iPaCyKXw0HWzAUwQ3TFAPWyPyjv1a8=
 github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230211181300-bc9a523e95ac h1:TSSRUyqyI91/71fVOC/nhw5LEM+pHS8jbYY1xbHiN8o=
 github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230211181300-bc9a523e95ac/go.mod h1:AOPWFxoUPtae5iPaCyKXw0HWzAUwQ3TFAPWyPyjv1a8=
+github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230212082104-97427693305a h1:9QzmshLG9skHqd+vD6fEHkfOYSWVA89psVM/OVRhRF0=
+github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230212082104-97427693305a/go.mod h1:AOPWFxoUPtae5iPaCyKXw0HWzAUwQ3TFAPWyPyjv1a8=
 github.com/boltdb/bolt v1.3.1 h1:JQmyP4ZBrce+ZQu0dY660FMfatumYDLun9hBCUVIkF4=
 github.com/boltdb/bolt v1.3.1/go.mod h1:clJnj/oiGkjum5o1McbSZDSLxVThjynRyGBgiAx27Ps=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=

@@ -13,6 +13,7 @@ type Bot struct {
 	client          *headhunter.Client
 	messages        config.Messages
 	mode            string
+	chosenResumeId  string
 	tokenRepository repository.TokenRepository
 }
 
@@ -22,6 +23,7 @@ func NewBot(bot *tgbotapi.BotAPI, client *headhunter.Client, messages config.Mes
 		client:          client,
 		messages:        messages,
 		mode:            "",
+		chosenResumeId:  "",
 		tokenRepository: tr,
 	}
 }
