@@ -3,10 +3,15 @@ package telegram
 import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 
 func (b *Bot) handleBaseKeyboard(message *tgbotapi.Message) error {
+	token, tokenErr := b.getAccessToken(message.Chat.ID)
+	if tokenErr != nil {
+		return tokenErr
+	}
+
 	switch message.Text {
 	case baseCommands[0]:
 		b.client.UrlParams.SetPage(0)
-		vacancies, _ := b.client.GetVacancies()
+		vacancies, _ := b.client.GetVacancies(token)
 		error := b.displayVacancies(vacancies, message)
 		b.openVacanciesKeyboard(message)
 		return error
@@ -21,8 +26,13 @@ func (b *Bot) handleBaseKeyboard(message *tgbotapi.Message) error {
 func (b *Bot) handleVacanciesKeyboard(message *tgbotapi.Message) error {
 	switch message.Text {
 	case vacanciesCommands[0]:
+		token, tokenErr := b.getAccessToken(message.Chat.ID)
+		if tokenErr != nil {
+			return tokenErr
+		}
+		
 		b.client.UrlParams.SetPage(b.client.UrlParams.Page + 1)
-		vacancies, _ := b.client.GetVacancies()
+		vacancies, _ := b.client.GetVacancies(token)
 		error := b.displayVacancies(vacancies, message)
 		return error
 	case vacanciesCommands[1]:
@@ -55,9 +65,14 @@ func (b *Bot) handleFiltersKeyboard(message *tgbotapi.Message) error {
 	case filterCommands[3]:
 		b.openExperienceKeyboard(message)
 	case filterCommands[4]:
+		token, tokenErr := b.getAccessToken(message.Chat.ID)
+		if tokenErr != nil {
+			return tokenErr
+		}
+
 		b.client.UrlParams.ClearFilters()
 		b.mode = ""
-		vacancies, _ := b.client.GetVacancies()
+		vacancies, _ := b.client.GetVacancies(token)
 		error := b.displayVacancies(vacancies, message)
 		return error
 	case filterCommands[5]:

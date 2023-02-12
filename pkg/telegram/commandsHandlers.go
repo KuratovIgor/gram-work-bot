@@ -49,41 +49,61 @@ func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleSearch(message *tgbotapi.Message) error {
+	token, tokenErr := b.getAccessToken(message.Chat.ID)
+	if tokenErr != nil {
+		return tokenErr
+	}
+
 	msg := tgbotapi.NewMessage(message.Chat.ID, message.Text)
 
 	b.client.UrlParams.SetSearch(msg.Text)
-	vacancies, _ := b.client.GetVacancies()
+	vacancies, _ := b.client.GetVacancies(token)
 
 	return b.displayVacancies(vacancies, message)
 }
 
 func (b *Bot) handleFilterBySalary(message *tgbotapi.Message) error {
+	token, tokenErr := b.getAccessToken(message.Chat.ID)
+	if tokenErr != nil {
+		return tokenErr
+	}
+
 	msg := tgbotapi.NewMessage(message.Chat.ID, message.Text)
 
 	b.client.UrlParams.SetSalary(msg.Text)
-	vacancies, _ := b.client.GetVacancies()
+	vacancies, _ := b.client.GetVacancies(token)
 
 	return b.displayVacancies(vacancies, message)
 }
 
 func (b *Bot) handleFilterByArea(message *tgbotapi.Message) error {
+	token, tokenErr := b.getAccessToken(message.Chat.ID)
+	if tokenErr != nil {
+		return tokenErr
+	}
+
 	msg := tgbotapi.NewMessage(message.Chat.ID, message.Text)
 
 	areaId := searchAreaByName(msg.Text)
 	b.client.UrlParams.SetArea(areaId)
-	vacancies, _ := b.client.GetVacancies()
+	vacancies, _ := b.client.GetVacancies(token)
 
 	return b.displayVacancies(vacancies, message)
 }
 
 func (b *Bot) handleFilterBySchedule(message *tgbotapi.Message) error {
+	token, tokenErr := b.getAccessToken(message.Chat.ID)
+	if tokenErr != nil {
+		return tokenErr
+	}
+
 	msg := tgbotapi.NewMessage(message.Chat.ID, message.Text)
 
 	scheduleId := getScheduleIdByText(message.Text)
 
 	if scheduleId != "unknown" {
 		b.client.UrlParams.SetSchedule(scheduleId)
-		vacancies, _ := b.client.GetVacancies()
+		vacancies, _ := b.client.GetVacancies(token)
 
 		return b.displayVacancies(vacancies, message)
 	}
@@ -95,13 +115,18 @@ func (b *Bot) handleFilterBySchedule(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleFilterByExperience(message *tgbotapi.Message) error {
+	token, tokenErr := b.getAccessToken(message.Chat.ID)
+	if tokenErr != nil {
+		return tokenErr
+	}
+
 	msg := tgbotapi.NewMessage(message.Chat.ID, message.Text)
 
 	experienceId := getExperienceIdByText(message.Text)
 
 	if experienceId != "unknown" {
 		b.client.UrlParams.SetExperience(experienceId)
-		vacancies, _ := b.client.GetVacancies()
+		vacancies, _ := b.client.GetVacancies(token)
 
 		return b.displayVacancies(vacancies, message)
 	}
@@ -126,10 +151,15 @@ func (b *Bot) handleInlineCommand(update tgbotapi.Update) error {
 }
 
 func (b *Bot) handleApplyToJob(message *tgbotapi.Message, vacancyId string) error {
+	token, tokenErr := b.getAccessToken(message.Chat.ID)
+	if tokenErr != nil {
+		return tokenErr
+	}
+
 	msg := tgbotapi.NewMessage(message.Chat.ID, "Ваш отклик успешно отправлен!")
 
 	b.chosenResumeId = vacancyId
-	resumeIds, _ := b.client.GetResumesIds()
+	resumeIds, _ := b.client.GetResumesIds(token)
 
 	// Если пользователь выбрал сначала резюме, а не вакансию, то вакансии с id резюме не существует
 	if Contains(resumeIds, vacancyId) {
@@ -140,7 +170,7 @@ func (b *Bot) handleApplyToJob(message *tgbotapi.Message, vacancyId string) erro
 		return b.displayChoosingResume(message)
 	}
 
-	err := b.client.ApplyToJob(vacancyId, b.chosenResumeId, "")
+	err := b.client.ApplyToJob(vacancyId, b.chosenResumeId, "", token)
 	if err != nil {
 		msg.Text = "Вы уже откликнулись на эту вакансию"
 	}
@@ -157,9 +187,14 @@ func (b *Bot) handleApplyToJob(message *tgbotapi.Message, vacancyId string) erro
 }
 
 func (b *Bot) handleApplyToJobByResume(message *tgbotapi.Message, resumeId string) error {
+	token, tokenErr := b.getAccessToken(message.Chat.ID)
+	if tokenErr != nil {
+		return tokenErr
+	}
+
 	msg := tgbotapi.NewMessage(message.Chat.ID, "Ваш отклик успешно отправлен!")
 
-	err := b.client.ApplyToJob(b.chosenResumeId, resumeId, "")
+	err := b.client.ApplyToJob(b.chosenResumeId, resumeId, "", token)
 	if err != nil {
 		msg.Text = "Вы уже откликнулись на эту вакансию"
 	}

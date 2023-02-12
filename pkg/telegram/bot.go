@@ -5,7 +5,6 @@ import (
 	"github.com/KuratovIgor/gram-work-bot/pkg/repository"
 	headhunter "github.com/KuratovIgor/head_hunter_sdk"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"log"
 )
 
 type Bot struct {
@@ -66,15 +65,6 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 		if err != nil {
 			b.initAuthorizationProcess(update.Message)
 			continue
-		}
-
-		if !b.client.IsTokenExists() {
-			token, err := b.getAccessToken(update.Message.Chat.ID)
-			if err != nil {
-				log.Panic(err)
-			}
-
-			b.client.SetToken(token)
 		}
 
 		if update.Message.IsCommand() {

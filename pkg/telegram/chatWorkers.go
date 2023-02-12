@@ -56,7 +56,12 @@ func (b *Bot) displayVacancies(vacancies []headhunter.Vacancy, message *tgbotapi
 }
 
 func (b *Bot) displayMyResumes(message *tgbotapi.Message) error {
-	resumes, err := b.client.GetResumes()
+	token, tokenErr := b.getAccessToken(message.Chat.ID)
+	if tokenErr != nil {
+		return tokenErr
+	}
+
+	resumes, err := b.client.GetResumes(token)
 	if err != nil {
 		return err
 	}
@@ -81,7 +86,12 @@ func (b *Bot) displayMyResumes(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) displayChoosingResume(message *tgbotapi.Message) error {
-	resumes, err := b.client.GetResumes()
+	token, tokenErr := b.getAccessToken(message.Chat.ID)
+	if tokenErr != nil {
+		return tokenErr
+	}
+
+	resumes, err := b.client.GetResumes(token)
 	if err != nil {
 		return err
 	}
