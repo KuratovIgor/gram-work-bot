@@ -2,6 +2,7 @@ package telegram
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"log"
 )
 
 const commandStart = "start"
@@ -43,6 +44,9 @@ func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 		return b.handleFilterBySchedule(message)
 	case "experience":
 		return b.handleFilterByExperience(message)
+	case "message":
+		b.applyMessage = message.Text
+		return b.handleApplyToJob(message)
 	}
 
 	return nil
@@ -142,27 +146,32 @@ func (b *Bot) handleInlineCommand(update tgbotapi.Update) error {
 	case "chooseResume":
 		return b.handleApplyToJobByResume(update.CallbackQuery.Message, update.CallbackQuery.Data)
 	case "apply":
-		return b.handleApplyToJob(update.CallbackQuery.Message, update.CallbackQuery.Data)
+		b.handleSendApplyMessage(update.CallbackQuery.Message, update.CallbackQuery.Data)
 	default:
-		return b.handleApplyToJob(update.CallbackQuery.Message, update.CallbackQuery.Data)
+		b.handleSendApplyMessage(update.CallbackQuery.Message, update.CallbackQuery.Data)
 	}
 
 	return nil
 }
 
-func (b *Bot) handleApplyToJob(message *tgbotapi.Message, vacancyId string) error {
+func (b *Bot) handleSendApplyMessage(message *tgbotapi.Message, vacancyId string) {
+	b.mode = "message"
+	b.chosenVacancyId = vacancyId
+	b.openCancelMessageKeyboard(message)
+}
+
+func (b *Bot) handleApplyToJob(message *tgbotapi.Message) error {
 	token, tokenErr := b.getAccessToken(message.Chat.ID)
 	if tokenErr != nil {
 		return tokenErr
 	}
 
-	msg := tgbotapi.NewMessage(message.Chat.ID, "Ваш отклик успешно отправлен!")
+	msg := tgbotapi.NewMessage(message.Chat.ID, "Отклик успешно отправлен")
 
-	b.chosenResumeId = vacancyId
 	resumeIds, _ := b.client.GetResumesIds(token)
 
 	// Если пользователь выбрал сначала резюме, а не вакансию, то вакансии с id резюме не существует
-	if Contains(resumeIds, vacancyId) {
+	if Contains(resumeIds, b.chosenVacancyId) {
 		return nil
 	}
 
@@ -170,18 +179,20 @@ func (b *Bot) handleApplyToJob(message *tgbotapi.Message, vacancyId string) erro
 		return b.displayChoosingResume(message)
 	}
 
-	err := b.client.ApplyToJob(vacancyId, b.chosenResumeId, "", token)
+	err := b.client.ApplyToJob(b.chosenVacancyId, resumeIds[0], b.applyMessage, token)
 	if err != nil {
 		msg.Text = "Вы уже откликнулись на эту вакансию"
 	}
 
-	b.chosenResumeId = ""
+	b.chosenVacancyId = ""
 	b.mode = ""
 
 	_, sendErr := b.bot.Send(msg)
 	if sendErr != nil {
 		return sendErr
 	}
+
+	b.openVacanciesKeyboard(message)
 
 	return nil
 }
@@ -192,20 +203,23 @@ func (b *Bot) handleApplyToJobByResume(message *tgbotapi.Message, resumeId strin
 		return tokenErr
 	}
 
-	msg := tgbotapi.NewMessage(message.Chat.ID, "Ваш отклик успешно отправлен!")
+	msg := tgbotapi.NewMessage(message.Chat.ID, "Отклик успешно отправлен")
 
-	err := b.client.ApplyToJob(b.chosenResumeId, resumeId, "", token)
+	err := b.client.ApplyToJob(b.chosenVacancyId, resumeId, b.applyMessage, token)
+	log.Println(123123123)
 	if err != nil {
 		msg.Text = "Вы уже откликнулись на эту вакансию"
 	}
 
-	b.chosenResumeId = ""
+	b.chosenVacancyId = ""
 	b.mode = ""
 
 	_, sendErr := b.bot.Send(msg)
 	if sendErr != nil {
 		return sendErr
 	}
+
+	b.openVacanciesKeyboard(message)
 
 	return nil
 }

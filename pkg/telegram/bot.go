@@ -12,7 +12,8 @@ type Bot struct {
 	client          *headhunter.Client
 	messages        config.Messages
 	mode            string
-	chosenResumeId  string
+	chosenVacancyId string
+	applyMessage    string
 	tokenRepository repository.TokenRepository
 }
 
@@ -22,7 +23,8 @@ func NewBot(bot *tgbotapi.BotAPI, client *headhunter.Client, messages config.Mes
 		client:          client,
 		messages:        messages,
 		mode:            "",
-		chosenResumeId:  "",
+		chosenVacancyId: "",
+		applyMessage:    "",
 		tokenRepository: tr,
 	}
 }
@@ -76,6 +78,7 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 			b.handleFiltersKeyboard(update.Message)
 			b.handleScheduleKeyboard(update.Message)
 			b.handleExperienceKeyboard(update.Message)
+			b.handleCancelMessageKeyboard(update.Message)
 
 			if !Contains(baseCommands, update.Message.Text) &&
 				!Contains(vacanciesCommands, update.Message.Text) &&

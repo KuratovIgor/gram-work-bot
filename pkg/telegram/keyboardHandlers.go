@@ -112,3 +112,13 @@ func (b *Bot) handleExperienceKeyboard(message *tgbotapi.Message) error {
 
 	return nil
 }
+
+func (b *Bot) handleCancelMessageKeyboard(message *tgbotapi.Message) error {
+	if message.Text == cancelMessageCommand {
+		b.mode = ""
+		b.applyMessage = ""
+		return b.handleApplyToJob(message)
+	}
+
+	return nil
+}

@@ -124,3 +124,21 @@ func (b *Bot) openExperienceKeyboard(message *tgbotapi.Message) {
 		log.Panic(err)
 	}
 }
+
+// КОМАНДА ДЛЯ ОТМЕНЫ СОПРОВОДИТЕЛЬНОГО ПИСЬМА
+var cancelMessageCommand = "Не отправлять письмо"
+var cancelMessageCommandKeyboard = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton(cancelMessageCommand),
+	),
+)
+
+func (b *Bot) openCancelMessageKeyboard(message *tgbotapi.Message) {
+	msg := tgbotapi.NewMessage(message.Chat.ID, "Напиши работодателю сопроводительное письмо")
+	msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
+	msg.ReplyMarkup = cancelMessageCommandKeyboard
+
+	if _, err := b.bot.Send(msg); err != nil {
+		log.Panic(err)
+	}
+}
