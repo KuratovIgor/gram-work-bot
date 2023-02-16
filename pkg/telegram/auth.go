@@ -9,7 +9,6 @@ func (b *Bot) initAuthorizationProcess(message *tgbotapi.Message) error {
 	authorizeLink, _ := b.client.GetAuthorizationURL(message.Chat.ID)
 
 	return b.displayAuthorizeMessage(authorizeLink, message)
-
 }
 
 func (b *Bot) getAccessToken(chatID int64) (string, error) {

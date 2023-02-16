@@ -2,6 +2,15 @@ package telegram
 
 import "strings"
 
+func Contains(a []string, x string) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
+}
+
 func searchAreaByName(name string) string {
 	for _, area := range AllAreas {
 		if strings.Contains(area.Name, name) {

@@ -2,7 +2,6 @@ package telegram
 
 import (
 	"fmt"
-	headhunter "github.com/KuratovIgor/head_hunter_sdk"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"time"
 )
@@ -13,38 +12,31 @@ const (
 )
 
 func (b *Bot) displayAuthorizeMessage(authorizeLink string, message *tgbotapi.Message) error {
-	var button = tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonURL("Авторизироваться", authorizeLink),
-		),
-	)
-
 	msg := tgbotapi.NewMessage(message.Chat.ID, "Привет!\nДля начала поиска тебе нужно авторизироваться.\nПожалуйста, перейди по ссылке, нажав на кнопку ниже.\n\nПосле авторизации введи команду /start для начала работы.")
-	msg.ReplyMarkup = button
+
+	authButton := b.getAuthorizeButton(authorizeLink)
+	msg.ReplyMarkup = authButton
 
 	_, err := b.bot.Send(msg)
 
 	return err
 }
 
-func (b *Bot) displayVacancies(vacancies []headhunter.Vacancy, message *tgbotapi.Message) error {
-	for _, item := range vacancies {
-		var buttons = tgbotapi.NewInlineKeyboardMarkup(
-			tgbotapi.NewInlineKeyboardRow(
-				tgbotapi.NewInlineKeyboardButtonData("Откликнуться", item.Id),
-				tgbotapi.NewInlineKeyboardButtonURL("Перейти", item.AlternateUrl),
-			),
-		)
+func (b *Bot) displayVacancies(message *tgbotapi.Message) error {
+	vacancies, err := b.getVacancies(message.Chat.ID)
+	if err != nil {
+		return err
+	}
 
-		time, _ := time.Parse("2006-01-02T15:04:05-0700", item.PublishedAt)
+	for _, vacancy := range vacancies {
+		time, _ := time.Parse("2006-01-02T15:04:05-0700", vacancy.PublishedAt)
 		publishedDate := time.Format("02 January 2006")
 
-		msg := tgbotapi.NewMessage(message.Chat.ID, fmt.Sprintf(vacancyMessage, item.Name, item.Salary.From, item.Salary.To,
-			item.Salary.Currency, item.Area, item.Employer, item.Responsibility, item.Requirement, item.Schedule, publishedDate))
+		msg := tgbotapi.NewMessage(message.Chat.ID, fmt.Sprintf(vacancyMessage, vacancy.Name, vacancy.Salary.From, vacancy.Salary.To,
+			vacancy.Salary.Currency, vacancy.Area, vacancy.Employer, vacancy.Responsibility, vacancy.Requirement, vacancy.Schedule, publishedDate))
 
-		msg.ReplyMarkup = buttons
-
-		b.mode = "apply"
+		vacancyKeyboard := b.getVacancyKeyboard(vacancy)
+		msg.ReplyMarkup = vacancyKeyboard
 
 		_, err := b.bot.Send(msg)
 		if err != nil {
@@ -52,29 +44,22 @@ func (b *Bot) displayVacancies(vacancies []headhunter.Vacancy, message *tgbotapi
 		}
 	}
 
+	b.mode = "apply"
+
 	return nil
 }
 
 func (b *Bot) displayMyResumes(message *tgbotapi.Message) error {
-	token, tokenErr := b.getAccessToken(message.Chat.ID)
-	if tokenErr != nil {
-		return tokenErr
-	}
-
-	resumes, err := b.client.GetResumes(token)
+	resumes, err := b.getResumes(message.Chat.ID)
 	if err != nil {
 		return err
 	}
 
 	for _, resume := range resumes {
-		var buttons = tgbotapi.NewInlineKeyboardMarkup(
-			tgbotapi.NewInlineKeyboardRow(
-				tgbotapi.NewInlineKeyboardButtonURL("Открыть", resume.URL),
-			),
-		)
-
 		msg := tgbotapi.NewMessage(message.Chat.ID, fmt.Sprintf(resumeMessage, resume.Name, resume.Age, resume.Title, resume.Salary, resume.Area, resume.Education))
-		msg.ReplyMarkup = buttons
+
+		resumeButton := b.getOpeningResumeButton(resume)
+		msg.ReplyMarkup = resumeButton
 
 		_, sendErr := b.bot.Send(msg)
 		if sendErr != nil {
@@ -86,22 +71,13 @@ func (b *Bot) displayMyResumes(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) displayChoosingResume(message *tgbotapi.Message) error {
-	token, tokenErr := b.getAccessToken(message.Chat.ID)
-	if tokenErr != nil {
-		return tokenErr
-	}
-
-	resumes, err := b.client.GetResumes(token)
+	resumes, err := b.getResumes(message.Chat.ID)
 	if err != nil {
 		return err
 	}
 
-	var buttons []tgbotapi.InlineKeyboardButton
-	for _, resume := range resumes {
-		buttons = append(buttons, tgbotapi.NewInlineKeyboardButtonData(resume.Title, resume.Id))
-	}
-
-	var keyboard = tgbotapi.NewInlineKeyboardMarkup(buttons)
+	choosingResumeKeyboard := b.getChoosingResumeKeyboard(resumes)
+	keyboard := tgbotapi.NewInlineKeyboardMarkup(choosingResumeKeyboard)
 
 	msg := tgbotapi.NewMessage(message.Chat.ID, "Выбери резюме, которое желаешь отправить")
 	msg.ReplyMarkup = keyboard

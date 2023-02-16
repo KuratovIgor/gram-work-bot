@@ -7,15 +7,17 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-type Bot struct {
-	bot             *tgbotapi.BotAPI
-	client          *headhunter.Client
-	messages        config.Messages
-	mode            string
-	chosenVacancyId string
-	applyMessage    string
-	tokenRepository repository.TokenRepository
-}
+type (
+	Bot struct {
+		bot             *tgbotapi.BotAPI
+		client          *headhunter.Client
+		messages        config.Messages
+		mode            string
+		chosenVacancyId string
+		applyMessage    string
+		tokenRepository repository.TokenRepository
+	}
+)
 
 func NewBot(bot *tgbotapi.BotAPI, client *headhunter.Client, messages config.Messages, tr repository.TokenRepository) *Bot {
 	return &Bot{
@@ -73,28 +75,23 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 			b.handleCommand(update.Message)
 			continue
 		} else {
-			b.handleBaseKeyboard(update.Message)
-			b.handleVacanciesKeyboard(update.Message)
-			b.handleFiltersKeyboard(update.Message)
-			b.handleScheduleKeyboard(update.Message)
-			b.handleExperienceKeyboard(update.Message)
-			b.handleCancelMessageKeyboard(update.Message)
-
-			if !Contains(baseCommands, update.Message.Text) &&
-				!Contains(vacanciesCommands, update.Message.Text) &&
-				!Contains(filterCommands, update.Message.Text) &&
-				b.mode != "" {
-				b.handleMessage(update.Message)
-			}
+			b.handleKeyboards(update.Message)
 		}
 	}
 }
 
-func Contains(a []string, x string) bool {
-	for _, n := range a {
-		if x == n {
-			return true
-		}
+func (b *Bot) handleKeyboards(message *tgbotapi.Message) {
+	b.handleBaseKeyboard(message)
+	b.handleVacanciesKeyboard(message)
+	b.handleFiltersKeyboard(message)
+	b.handleScheduleKeyboard(message)
+	b.handleExperienceKeyboard(message)
+	b.handleCancelMessageKeyboard(message)
+
+	if !Contains(baseCommands, message.Text) &&
+		!Contains(vacanciesCommands, message.Text) &&
+		!Contains(filterCommands, message.Text) &&
+		b.mode != "" {
+		b.handleMessage(message)
 	}
-	return false
 }

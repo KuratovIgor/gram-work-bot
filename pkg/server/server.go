@@ -63,16 +63,3 @@ func (s *AuthorizationServer) Authorize(chatID int64, authCode string) error {
 
 	return nil
 }
-
-func (s *AuthorizationServer) GetResumes(chatID int64) error {
-	token, err := s.tokenRepository.Get(chatID, repository.AccessTokens)
-	if err != nil {
-		return err
-	}
-
-	log.Println(token)
-	// TODO: Обращение к SDK. Получение списка резюме авторизированного пользователя
-	// TODO: Сохранение резюме в базу данных
-
-	return nil
-}
