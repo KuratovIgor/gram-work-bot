@@ -14,6 +14,12 @@ func (b *Bot) handleBaseKeyboard(message *tgbotapi.Message) error {
 	case baseCommands[1]:
 		error := b.displayMyResumes(message)
 		return error
+	case baseCommands[2]:
+		error := b.displayMyResponses(message)
+		return error
+	case baseCommands[3]:
+		error := b.handleLogout(message)
+		return error
 	}
 
 	return nil

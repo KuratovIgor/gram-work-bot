@@ -62,6 +62,10 @@ github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230212164816-ba958861a4cd h1:fFJ
 github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230212164816-ba958861a4cd/go.mod h1:AOPWFxoUPtae5iPaCyKXw0HWzAUwQ3TFAPWyPyjv1a8=
 github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230214175557-22b65d179a0e h1:BlnxeCldV4/u0faFHPaZ0WrIuL4Jm6AOEkJ3PVy1vgA=
 github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230214175557-22b65d179a0e/go.mod h1:AOPWFxoUPtae5iPaCyKXw0HWzAUwQ3TFAPWyPyjv1a8=
+github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230218040053-06cea37d1e62 h1:/XLTSF0E2ubvCY37q3cQ68iMiP4pxk33hp5ze+H+mMo=
+github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230218040053-06cea37d1e62/go.mod h1:AOPWFxoUPtae5iPaCyKXw0HWzAUwQ3TFAPWyPyjv1a8=
+github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230219100003-7d21164f955f h1:hJPI53o9EnVQ8yu+Q6UaNZZepRT/LR6xeJrhIeL5cwg=
+github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230219100003-7d21164f955f/go.mod h1:AOPWFxoUPtae5iPaCyKXw0HWzAUwQ3TFAPWyPyjv1a8=
 github.com/boltdb/bolt v1.3.1 h1:JQmyP4ZBrce+ZQu0dY660FMfatumYDLun9hBCUVIkF4=
 github.com/boltdb/bolt v1.3.1/go.mod h1:clJnj/oiGkjum5o1McbSZDSLxVThjynRyGBgiAx27Ps=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=

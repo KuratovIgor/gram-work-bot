@@ -15,10 +15,17 @@ func NewTokenRepository(db *bolt.DB) *TokenRepository {
 	return &TokenRepository{db: db}
 }
 
-func (r *TokenRepository) Save(chatID int64, token string, bucket repository.Bucket) error {
+func (r *TokenRepository) Save(chatId int64, token string, bucket repository.Bucket) error {
 	return r.db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucket))
-		return b.Put(intToBytes(chatID), []byte(token))
+		return b.Put(intToBytes(chatId), []byte(token))
+	})
+}
+
+func (r *TokenRepository) Delete(chatId int64, bucket repository.Bucket) error {
+	return r.db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(bucket))
+		return b.Delete(intToBytes(chatId))
 	})
 }
 

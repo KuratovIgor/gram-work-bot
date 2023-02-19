@@ -3,12 +3,10 @@ package telegram
 import (
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"time"
 )
 
 const (
-	vacancyMessage = "ДОЛЖНОСТЬ:\n%s\n\nЗАРПЛАТА:\n от %s до %s %s\n\nГород:\n%s\n\nРАБОТОДАТЕЛЬ:\n%s\n\nОПИСАНИЕ:\n%s\n\nТРЕБОВАНИЯ:\n%s\n\nГРАФИК:\n%s\n\nОПУБЛИКОВАНО:\n%s"
-	resumeMessage  = "%s, %s\n\nДОЛЖНОСТЬ\n%s    %s\n\nГОРОД\n%s\n\nОБРАЗОВНАИЕ\n%s"
+	resumeMessage = "%s, %s\n\nДОЛЖНОСТЬ\n%s    %s\n\nГОРОД\n%s\n\nОБРАЗОВНАИЕ\n%s"
 )
 
 func (b *Bot) displayAuthorizeMessage(authorizeLink string, message *tgbotapi.Message) error {
@@ -29,11 +27,9 @@ func (b *Bot) displayVacancies(message *tgbotapi.Message) error {
 	}
 
 	for _, vacancy := range vacancies {
-		time, _ := time.Parse("2006-01-02T15:04:05-0700", vacancy.PublishedAt)
-		publishedDate := time.Format("02 January 2006")
+		messageTemplate := getVacancyMessageTemplate(vacancy)
 
-		msg := tgbotapi.NewMessage(message.Chat.ID, fmt.Sprintf(vacancyMessage, vacancy.Name, vacancy.Salary.From, vacancy.Salary.To,
-			vacancy.Salary.Currency, vacancy.Area, vacancy.Employer, vacancy.Responsibility, vacancy.Requirement, vacancy.Schedule, publishedDate))
+		msg := tgbotapi.NewMessage(message.Chat.ID, messageTemplate)
 
 		vacancyKeyboard := b.getVacancyKeyboard(vacancy)
 		msg.ReplyMarkup = vacancyKeyboard
@@ -60,6 +56,26 @@ func (b *Bot) displayMyResumes(message *tgbotapi.Message) error {
 
 		resumeButton := b.getOpeningResumeButton(resume)
 		msg.ReplyMarkup = resumeButton
+
+		_, sendErr := b.bot.Send(msg)
+		if sendErr != nil {
+			return sendErr
+		}
+	}
+
+	return nil
+}
+
+func (b *Bot) displayMyResponses(message *tgbotapi.Message) error {
+	responses, err := b.getResponses(message.Chat.ID)
+	if err != nil {
+		return err
+	}
+
+	for _, response := range responses {
+		messageTemplate := getResponseMessageTemplate(response)
+
+		msg := tgbotapi.NewMessage(message.Chat.ID, messageTemplate)
 
 		_, sendErr := b.bot.Send(msg)
 		if sendErr != nil {

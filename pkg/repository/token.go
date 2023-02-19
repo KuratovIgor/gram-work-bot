@@ -8,6 +8,7 @@ const (
 )
 
 type TokenRepository interface {
-	Save(chatID int64, token string, bucket Bucket) error
+	Save(chatId int64, token string, bucket Bucket) error
 	Get(chatId int64, bucket Bucket) (string, error)
+	Delete(chatId int64, bucket Bucket) error
 }

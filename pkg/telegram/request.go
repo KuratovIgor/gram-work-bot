@@ -1,6 +1,8 @@
 package telegram
 
-import headhunter "github.com/KuratovIgor/head_hunter_sdk"
+import (
+	headhunter "github.com/KuratovIgor/head_hunter_sdk"
+)
 
 func (b *Bot) getVacancies(chatId int64) ([]headhunter.Vacancy, error) {
 	token, tokenErr := b.getAccessToken(chatId)
@@ -30,6 +32,20 @@ func (b *Bot) getResumes(chatId int64) ([]headhunter.Resume, error) {
 	return resumes, nil
 }
 
+func (b *Bot) getResponses(chatId int64) ([]headhunter.Response, error) {
+	token, tokenErr := b.getAccessToken(chatId)
+	if tokenErr != nil {
+		return nil, tokenErr
+	}
+
+	responses, err := b.client.GetResponseList(token)
+	if err != nil {
+		return nil, err
+	}
+
+	return responses, nil
+}
+
 func (b *Bot) getResumesIds(chatId int64) ([]string, error) {
 	token, tokenErr := b.getAccessToken(chatId)
 	if tokenErr != nil {
@@ -51,4 +67,13 @@ func (b *Bot) applyToJob(chatId int64, vacancyId string, resumeId string, messag
 	}
 
 	return b.client.ApplyToJob(vacancyId, resumeId, message, token)
+}
+
+func (b *Bot) logout(chatId int64) error {
+	token, tokenErr := b.getAccessToken(chatId)
+	if tokenErr != nil {
+		return tokenErr
+	}
+
+	return b.client.Logout(token)
 }
