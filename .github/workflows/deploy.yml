@@ -49,4 +49,4 @@ jobs:
             docker stop ${{ secrets.CONTAINER_NAME }}
             docker rm ${{ secrets.CONTAINER_NAME }}
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.IMAGE_NAME }}
-            docker run -d --name ${{ secrets.CONTAINER_NAME }} -p 80:80 --env TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }} --env REDIRECT_URI=${{ secrets.REDIRECT_URI }} --env CLIENT_ID=${{ secrets.CLIENT_ID }} --env CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.IMAGE_NAME }}
+            docker run -d --name ${{ secrets.CONTAINER_NAME }} -p 5000:80 --env TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }} --env REDIRECT_URI=${{ secrets.REDIRECT_URI }} --env CLIENT_ID=${{ secrets.CLIENT_ID }} --env CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} --network gramwork-net ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.IMAGE_NAME }}
