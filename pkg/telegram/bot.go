@@ -5,29 +5,32 @@ import (
 	"github.com/KuratovIgor/gram-work-bot/pkg/repository"
 	headhunter "github.com/KuratovIgor/head_hunter_sdk"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"log"
 )
 
 type (
 	Bot struct {
-		bot             *tgbotapi.BotAPI
-		client          *headhunter.Client
-		messages        config.Messages
-		mode            string
-		chosenVacancyId string
-		applyMessage    string
-		tokenRepository repository.TokenRepository
+		bot               *tgbotapi.BotAPI
+		client            *headhunter.Client
+		messages          config.Messages
+		mode              string
+		chosenVacancyId   string
+		applyMessage      string
+		tokenRepository   repository.TokenRepository
+		graphqlRepository repository.GraphqlRepository
 	}
 )
 
-func NewBot(bot *tgbotapi.BotAPI, client *headhunter.Client, messages config.Messages, tr repository.TokenRepository) *Bot {
+func NewBot(bot *tgbotapi.BotAPI, client *headhunter.Client, messages config.Messages, tr repository.TokenRepository, graphqlRepository repository.GraphqlRepository) *Bot {
 	return &Bot{
-		bot:             bot,
-		client:          client,
-		messages:        messages,
-		mode:            "",
-		chosenVacancyId: "",
-		applyMessage:    "",
-		tokenRepository: tr,
+		bot:               bot,
+		client:            client,
+		messages:          messages,
+		mode:              "",
+		chosenVacancyId:   "",
+		applyMessage:      "",
+		tokenRepository:   tr,
+		graphqlRepository: graphqlRepository,
 	}
 }
 
@@ -56,6 +59,9 @@ func (b *Bot) initUpdatesChannel() (tgbotapi.UpdatesChannel, error) {
 
 func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 	for update := range updates {
+		res, _ := b.graphqlRepository.GetAccessToken(update.Message.Chat.ID)
+		log.Println("TOKEN: ", res)
+
 		if update.CallbackQuery != nil {
 			b.handleInlineCommand(update)
 			continue

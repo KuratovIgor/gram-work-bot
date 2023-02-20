@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/spf13/viper"
+	"os"
 )
 
 type Config struct {
@@ -67,6 +68,11 @@ func unmarshal(cfg *Config) error {
 }
 
 func parseEnv(cfg *Config) error {
+	os.Setenv("telegram_token", "5625272170:AAGQVFOEIh_aoRMUfB3vBXx6QrDBM5sLYro")
+	os.Setenv("redirect_uri", "http://localhost/")
+	os.Setenv("client_id", "P3PD344RTN89887V9SQJB24QNA0U06SPP3JG6TSR59SKMQ1191C8VHRJLC17RO0D")
+	os.Setenv("client_secret", "SMIR5S7AK9P7FMOE4MRLJ291N4939TTM5BO9RGM7NOFSEC9RSMF6CCD50TVFBQUS")
+
 	if err := viper.BindEnv("telegram_token"); err != nil {
 		return err
 	}

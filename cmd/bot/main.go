@@ -4,11 +4,13 @@ import (
 	"github.com/KuratovIgor/gram-work-bot/pkg/config"
 	"github.com/KuratovIgor/gram-work-bot/pkg/repository"
 	"github.com/KuratovIgor/gram-work-bot/pkg/repository/boltdb"
+	"github.com/KuratovIgor/gram-work-bot/pkg/repository/graphqldb"
 	"github.com/KuratovIgor/gram-work-bot/pkg/server"
 	"github.com/KuratovIgor/gram-work-bot/pkg/telegram"
 	headhunter "github.com/KuratovIgor/head_hunter_sdk"
 	"github.com/boltdb/bolt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/machinebox/graphql"
 	"log"
 )
 
@@ -33,12 +35,15 @@ func main() {
 
 	tokenRepository := boltdb.NewTokenRepository(db)
 
+	graphqlClient := graphql.NewClient("https://uk.api.8base.com/clbmch9qo002v08lfal9zccgy")
+	graphQlRepository := graphqldb.NewGraphqlRepository(graphqlClient)
+
 	headhunterClient, err := headhunter.NewClient(cfg.ClientID, cfg.ClientSecret, cfg.RedirectURI)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	telegramBot := telegram.NewBot(bot, headhunterClient, cfg.Messages, tokenRepository)
+	telegramBot := telegram.NewBot(bot, headhunterClient, cfg.Messages, tokenRepository, graphQlRepository)
 
 	authorizationServer := server.NewAuthorizationServer(tokenRepository, "https://t.me/gram_work_bot", headhunterClient)
 

@@ -14,4 +14,4 @@ push-image:
 	docker push kuratovia/gram-work-bot-image .
 
 start-container:
-	docker run --name gram-work-bot -p 80:80 --env-file .env kuratovia/gram-work-bot-image
+	docker run --name gram-work-bot -p 3000:80 --env-file .env kuratovia/gram-work-bot-image

@@ -12,3 +12,7 @@ type TokenRepository interface {
 	Get(chatId int64, bucket Bucket) (string, error)
 	Delete(chatId int64, bucket Bucket) error
 }
+
+type GraphqlRepository interface {
+	GetAccessToken(chatId int64) (string, error)
+}
