@@ -1,8 +1,8 @@
 package telegram
 
 import (
-	"github.com/KuratovIgor/gram-work-bot/pkg/repository"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"log"
 )
 
 func (b *Bot) initAuthorizationProcess(message *tgbotapi.Message) error {
@@ -17,14 +17,10 @@ func (b *Bot) handleLogout(message *tgbotapi.Message) error {
 		return resErr
 	}
 
-	rmAccessTokenErr := b.tokenRepository.Delete(message.Chat.ID, repository.AccessTokens)
-	if rmAccessTokenErr != nil {
-		return rmAccessTokenErr
-	}
-
-	rmRefreshTokenErr := b.tokenRepository.Delete(message.Chat.ID, repository.RefreshToken)
-	if rmRefreshTokenErr != nil {
-		return rmRefreshTokenErr
+	removeErr := b.graphqlRepository.RemoveSession(message.Chat.ID)
+	if removeErr != nil {
+		log.Panic(removeErr)
+		return removeErr
 	}
 
 	msg := tgbotapi.NewMessage(message.Chat.ID, "Работа завершена!\nВозвращайся скорее!")
@@ -38,5 +34,5 @@ func (b *Bot) handleLogout(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) getAccessToken(chatID int64) (string, error) {
-	return b.tokenRepository.Get(chatID, repository.AccessTokens)
+	return b.graphqlRepository.GetAccessToken(chatID)
 }
