@@ -2,7 +2,6 @@ package telegram
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"log"
 )
 
 func (b *Bot) handleSendApplyMessage(message *tgbotapi.Message, vacancyId string) {
@@ -50,7 +49,6 @@ func (b *Bot) handleApplyToJobByResume(message *tgbotapi.Message, resumeId strin
 	msg := tgbotapi.NewMessage(message.Chat.ID, "Отклик успешно отправлен")
 
 	err := b.applyToJob(message.Chat.ID, b.chosenVacancyId, resumeId, b.applyMessage)
-	log.Println(123123123)
 	if err != nil {
 		msg.Text = "Вы уже откликнулись на эту вакансию"
 	}

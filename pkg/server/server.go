@@ -3,20 +3,19 @@ package server
 import (
 	"github.com/KuratovIgor/gram-work-bot/pkg/repository"
 	headhunter "github.com/KuratovIgor/head_hunter_sdk"
-	"log"
 	"net/http"
 	"strconv"
 )
 
 type AuthorizationServer struct {
-	server          *http.Server
-	tokenRepository repository.TokenRepository
-	redirectURL     string
-	client          *headhunter.Client
+	server            *http.Server
+	graphqlRepository repository.GraphqlRepository
+	redirectURL       string
+	client            *headhunter.Client
 }
 
-func NewAuthorizationServer(tokenRepository repository.TokenRepository, redirectURL string, client *headhunter.Client) *AuthorizationServer {
-	return &AuthorizationServer{tokenRepository: tokenRepository, redirectURL: redirectURL, client: client}
+func NewAuthorizationServer(graphqlRepository repository.GraphqlRepository, redirectURL string, client *headhunter.Client) *AuthorizationServer {
+	return &AuthorizationServer{graphqlRepository: graphqlRepository, redirectURL: redirectURL, client: client}
 }
 
 func (s *AuthorizationServer) Start() error {
@@ -57,9 +56,7 @@ func (s *AuthorizationServer) Authorize(chatID int64, authCode string) error {
 		return err
 	}
 
-	log.Println("TOKEN ", response.AccessToken)
-	s.tokenRepository.Save(chatID, response.AccessToken, repository.AccessTokens)
-	s.tokenRepository.Save(chatID, response.RefreshToken, repository.RefreshToken)
+	s.graphqlRepository.CreateSession(chatID, response.AccessToken, response.RefreshToken)
 
 	return nil
 }

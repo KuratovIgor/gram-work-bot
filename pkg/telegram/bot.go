@@ -9,25 +9,25 @@ import (
 
 type (
 	Bot struct {
-		bot             *tgbotapi.BotAPI
-		client          *headhunter.Client
-		messages        config.Messages
-		mode            string
-		chosenVacancyId string
-		applyMessage    string
-		tokenRepository repository.TokenRepository
+		bot               *tgbotapi.BotAPI
+		client            *headhunter.Client
+		messages          config.Messages
+		mode              string
+		chosenVacancyId   string
+		applyMessage      string
+		graphqlRepository repository.GraphqlRepository
 	}
 )
 
-func NewBot(bot *tgbotapi.BotAPI, client *headhunter.Client, messages config.Messages, tr repository.TokenRepository) *Bot {
+func NewBot(bot *tgbotapi.BotAPI, client *headhunter.Client, messages config.Messages, graphqlRepository repository.GraphqlRepository) *Bot {
 	return &Bot{
-		bot:             bot,
-		client:          client,
-		messages:        messages,
-		mode:            "",
-		chosenVacancyId: "",
-		applyMessage:    "",
-		tokenRepository: tr,
+		bot:               bot,
+		client:            client,
+		messages:          messages,
+		mode:              "",
+		chosenVacancyId:   "",
+		applyMessage:      "",
+		graphqlRepository: graphqlRepository,
 	}
 }
 
@@ -65,6 +65,7 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 			continue
 		}
 
+		//_, err := b.getAccessToken(update.Message.Chat.ID)
 		_, err := b.getAccessToken(update.Message.Chat.ID)
 		if err != nil {
 			b.initAuthorizationProcess(update.Message)
