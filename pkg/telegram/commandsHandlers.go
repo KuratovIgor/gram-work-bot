@@ -2,6 +2,7 @@ package telegram
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"strconv"
 )
 
 const commandStart = "start"
@@ -45,7 +46,30 @@ func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 		return b.handleFilterByExperience(message)
 	case "message":
 		b.applyMessage = message.Text
-		return b.handleApplyToJob(message)
+		applyErr := b.handleApplyToJob(message)
+		if applyErr != nil {
+			return applyErr
+		}
+
+		vacancy, reqErr := b.getVacancy(message.Chat.ID, b.chosenVacancyId)
+		if reqErr != nil {
+			return reqErr
+		}
+
+		salaryFrom, _ := strconv.Atoi(vacancy.Salary.From)
+		salaryTo, _ := strconv.Atoi(vacancy.Salary.To)
+
+		infoAboutMe, infoErr := b.getInfoAboutMe(message.Chat.ID)
+		if infoErr != nil {
+			return infoErr
+		}
+
+		savingErr := b.graphqlRepository.SaveApplyToJob(infoAboutMe.UserID, vacancy.Name, vacancy.Employer, vacancy.AlternateUrl, vacancy.Area, "Отклик", salaryFrom, salaryTo, vacancy.PublishedAt)
+		if savingErr != nil {
+			return savingErr
+		}
+
+		b.chosenVacancyId = ""
 	}
 
 	return nil
@@ -54,7 +78,30 @@ func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 func (b *Bot) handleInlineCommand(update tgbotapi.Update) error {
 	switch b.mode {
 	case "chooseResume":
-		return b.handleApplyToJobByResume(update.CallbackQuery.Message, update.CallbackQuery.Data)
+		applyErr := b.handleApplyToJobByResume(update.CallbackQuery.Message, update.CallbackQuery.Data)
+		if applyErr != nil {
+			return applyErr
+		}
+
+		vacancy, reqErr := b.getVacancy(update.CallbackQuery.Message.Chat.ID, b.chosenVacancyId)
+		if reqErr != nil {
+			return reqErr
+		}
+
+		salaryFrom, _ := strconv.Atoi(vacancy.Salary.From)
+		salaryTo, _ := strconv.Atoi(vacancy.Salary.To)
+
+		infoAboutMe, infoErr := b.getInfoAboutMe(update.CallbackQuery.Message.Chat.ID)
+		if infoErr != nil {
+			return infoErr
+		}
+
+		savingErr := b.graphqlRepository.SaveApplyToJob(infoAboutMe.UserID, vacancy.Name, vacancy.Employer, vacancy.AlternateUrl, vacancy.Area, "Отклик", salaryFrom, salaryTo, vacancy.PublishedAt)
+		if savingErr != nil {
+			return savingErr
+		}
+
+		b.chosenVacancyId = ""
 	case "apply":
 		b.handleSendApplyMessage(update.CallbackQuery.Message, update.CallbackQuery.Data)
 	default:

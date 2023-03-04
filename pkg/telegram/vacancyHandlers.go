@@ -32,7 +32,6 @@ func (b *Bot) handleApplyToJob(message *tgbotapi.Message) error {
 		msg.Text = "Вы уже откликнулись на эту вакансию"
 	}
 
-	b.chosenVacancyId = ""
 	b.mode = ""
 
 	_, sendErr := b.bot.Send(msg)
@@ -53,7 +52,6 @@ func (b *Bot) handleApplyToJobByResume(message *tgbotapi.Message, resumeId strin
 		msg.Text = "Вы уже откликнулись на эту вакансию"
 	}
 
-	b.chosenVacancyId = ""
 	b.mode = ""
 
 	_, sendErr := b.bot.Send(msg)

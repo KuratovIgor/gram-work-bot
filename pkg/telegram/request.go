@@ -4,6 +4,20 @@ import (
 	headhunter "github.com/KuratovIgor/head_hunter_sdk"
 )
 
+func (b *Bot) getInfoAboutMe(chatId int64) (*headhunter.MeType, error) {
+	token, tokenErr := b.getAccessToken(chatId)
+	if tokenErr != nil {
+		return nil, tokenErr
+	}
+
+	info, resErr := b.client.GetInfoAboutMe(token)
+	if resErr != nil {
+		return nil, resErr
+	}
+
+	return info, resErr
+}
+
 func (b *Bot) getVacancies(chatId int64) ([]headhunter.Vacancy, error) {
 	token, tokenErr := b.getAccessToken(chatId)
 	if tokenErr != nil {
@@ -16,6 +30,20 @@ func (b *Bot) getVacancies(chatId int64) ([]headhunter.Vacancy, error) {
 	}
 
 	return vacancies, nil
+}
+
+func (b *Bot) getVacancy(chatId int64, vacancyId string) (*headhunter.Vacancy, error) {
+	token, tokenErr := b.getAccessToken(chatId)
+	if tokenErr != nil {
+		return nil, tokenErr
+	}
+
+	vacancy, resErr := b.client.GetVacancy(vacancyId, token)
+	if resErr != nil {
+		return nil, resErr
+	}
+
+	return vacancy, nil
 }
 
 func (b *Bot) getResumes(chatId int64) ([]headhunter.Resume, error) {

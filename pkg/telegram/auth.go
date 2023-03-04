@@ -2,7 +2,6 @@ package telegram
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"log"
 )
 
 func (b *Bot) initAuthorizationProcess(message *tgbotapi.Message) error {
@@ -19,7 +18,6 @@ func (b *Bot) handleLogout(message *tgbotapi.Message) error {
 
 	removeErr := b.graphqlRepository.RemoveSession(message.Chat.ID)
 	if removeErr != nil {
-		log.Panic(removeErr)
 		return removeErr
 	}
 

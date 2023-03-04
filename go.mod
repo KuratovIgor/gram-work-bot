@@ -3,7 +3,7 @@ module github.com/KuratovIgor/gram-work-bot
 go 1.19
 
 require (
-	github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230221010748-dc37b4f8aa48 // indirect
+	github.com/KuratovIgor/head_hunter_sdk v0.0.0-20230228152249-c1f72773732d // indirect
 	github.com/boltdb/bolt v1.3.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible // indirect

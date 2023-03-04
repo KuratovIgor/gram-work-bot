@@ -18,6 +18,9 @@ func (b *Bot) handleBaseKeyboard(message *tgbotapi.Message) error {
 		error := b.displayMyResponses(message)
 		return error
 	case baseCommands[3]:
+		error := b.displayLKUrl(message)
+		return error
+	case baseCommands[4]:
 		error := b.handleLogout(message)
 		return error
 	}
@@ -105,7 +108,10 @@ func (b *Bot) handleCancelMessageKeyboard(message *tgbotapi.Message) error {
 	if message.Text == cancelMessageCommand {
 		b.mode = ""
 		b.applyMessage = ""
-		return b.handleApplyToJob(message)
+		applyErr := b.handleApplyToJob(message)
+		if applyErr != nil {
+			return applyErr
+		}
 	}
 
 	return nil
