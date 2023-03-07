@@ -33,7 +33,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	telegramBot := telegram.NewBot(bot, headhunterClient, cfg.Messages, graphQlRepository)
+	telegramBot := telegram.NewBot(bot, headhunterClient, cfg.Messages, graphQlRepository, cfg.LkUrl)
 
 	authorizationServer := server.NewAuthorizationServer(graphQlRepository, "https://t.me/gram_work_bot", headhunterClient)
 

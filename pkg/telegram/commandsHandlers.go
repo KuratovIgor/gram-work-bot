@@ -64,7 +64,7 @@ func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 			return infoErr
 		}
 
-		savingErr := b.graphqlRepository.SaveApplyToJob(infoAboutMe.UserID, vacancy.Name, vacancy.Employer, vacancy.AlternateUrl, vacancy.Area, "Отклик", salaryFrom, salaryTo, vacancy.PublishedAt)
+		savingErr := b.graphqlRepository.SaveApplyToJob(infoAboutMe.UserID, vacancy.Id, vacancy.Name, vacancy.Employer, vacancy.AlternateUrl, vacancy.Area, "Отклик", salaryFrom, salaryTo, vacancy.PublishedAt)
 		if savingErr != nil {
 			return savingErr
 		}
@@ -96,7 +96,7 @@ func (b *Bot) handleInlineCommand(update tgbotapi.Update) error {
 			return infoErr
 		}
 
-		savingErr := b.graphqlRepository.SaveApplyToJob(infoAboutMe.UserID, vacancy.Name, vacancy.Employer, vacancy.AlternateUrl, vacancy.Area, "Отклик", salaryFrom, salaryTo, vacancy.PublishedAt)
+		savingErr := b.graphqlRepository.SaveApplyToJob(infoAboutMe.UserID, vacancy.Id, vacancy.Name, vacancy.Employer, vacancy.AlternateUrl, vacancy.Area, "Отклик", salaryFrom, salaryTo, vacancy.PublishedAt)
 		if savingErr != nil {
 			return savingErr
 		}

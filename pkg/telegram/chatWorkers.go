@@ -3,6 +3,7 @@ package telegram
 import (
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"strconv"
 )
 
 const (
@@ -111,12 +112,7 @@ func (b *Bot) displayChoosingResume(message *tgbotapi.Message) error {
 func (b *Bot) displayLKUrl(message *tgbotapi.Message) error {
 	lkUrlButton := b.getLKUrlButton()
 
-	token, err := b.getAccessToken(message.Chat.ID)
-	if err != nil {
-		return err
-	}
-
-	msg := tgbotapi.NewMessage(message.Chat.ID, "Для входа в личный кабинет тебе необходимо перейти по ссылке ниже.\nПри авторизации необходимо использовать данный код:\n"+token)
+	msg := tgbotapi.NewMessage(message.Chat.ID, "Для входа в личный кабинет тебе необходимо перейти по ссылке ниже.\nПри авторизации необходимо использовать данный код:\n"+strconv.Itoa(int(message.Chat.ID)))
 	msg.ReplyMarkup = lkUrlButton
 
 	_, sendErr := b.bot.Send(msg)

@@ -75,7 +75,10 @@ func (s *AuthorizationServer) createUser(chatID int64, token string) error {
 		return err
 	}
 
-	s.graphqlRepository.CreateUser(chatID, response.Name, response.LastName, response.MiddleName, response.Email, response.Phone, response.UserID)
+	err = s.graphqlRepository.CreateUser(chatID, response.Name, response.LastName, response.MiddleName, response.Email, response.Phone, response.UserID)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

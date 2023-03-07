@@ -10,6 +10,7 @@ type Config struct {
 	ClientID      string
 	ClientSecret  string
 	Messages      Messages
+	LkUrl         string
 }
 
 type Messages struct {
@@ -83,10 +84,15 @@ func parseEnv(cfg *Config) error {
 		return err
 	}
 
+	if err := viper.BindEnv("lk_url"); err != nil {
+		return err
+	}
+
 	cfg.TelegramToken = viper.GetString("telegram_token")
 	cfg.RedirectURI = viper.GetString("redirect_uri")
 	cfg.ClientID = viper.GetString("client_id")
 	cfg.ClientSecret = viper.GetString("client_secret")
+	cfg.LkUrl = viper.GetString("lk_url")
 
 	return nil
 }

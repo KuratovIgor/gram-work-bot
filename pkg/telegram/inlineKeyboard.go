@@ -43,7 +43,7 @@ func (b *Bot) getChoosingResumeKeyboard(resumes []headhunter.Resume) []tgbotapi.
 func (b *Bot) getLKUrlButton() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonURL("Перейти в личный кабинет", "http://pokedex.kuratovia.ru"),
+			tgbotapi.NewInlineKeyboardButtonURL("Перейти в личный кабинет", b.lkUrl),
 		),
 	)
 }

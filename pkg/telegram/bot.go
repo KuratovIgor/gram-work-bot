@@ -5,6 +5,7 @@ import (
 	"github.com/KuratovIgor/gram-work-bot/pkg/repository"
 	headhunter "github.com/KuratovIgor/head_hunter_sdk"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"time"
 )
 
 type (
@@ -16,10 +17,11 @@ type (
 		chosenVacancyId   string
 		applyMessage      string
 		graphqlRepository repository.GraphqlRepository
+		lkUrl             string
 	}
 )
 
-func NewBot(bot *tgbotapi.BotAPI, client *headhunter.Client, messages config.Messages, graphqlRepository repository.GraphqlRepository) *Bot {
+func NewBot(bot *tgbotapi.BotAPI, client *headhunter.Client, messages config.Messages, graphqlRepository repository.GraphqlRepository, lkUrl string) *Bot {
 	return &Bot{
 		bot:               bot,
 		client:            client,
@@ -28,6 +30,7 @@ func NewBot(bot *tgbotapi.BotAPI, client *headhunter.Client, messages config.Mes
 		chosenVacancyId:   "",
 		applyMessage:      "",
 		graphqlRepository: graphqlRepository,
+		lkUrl:             lkUrl,
 	}
 }
 
@@ -55,6 +58,7 @@ func (b *Bot) initUpdatesChannel() (tgbotapi.UpdatesChannel, error) {
 }
 
 func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
+	//quit := make(chan bool)
 	for update := range updates {
 		if update.CallbackQuery != nil {
 			b.handleInlineCommand(update)
@@ -65,10 +69,20 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 			continue
 		}
 
-		//_, err := b.getAccessToken(update.Message.Chat.ID)
 		_, err := b.getAccessToken(update.Message.Chat.ID)
 		if err != nil {
 			b.initAuthorizationProcess(update.Message)
+
+			go func() {
+				upt := update
+				for {
+					err := b.runResponsesUpdates(upt)
+					if err != nil {
+						return
+					}
+				}
+			}()
+
 			continue
 		}
 
@@ -95,4 +109,27 @@ func (b *Bot) handleKeyboards(message *tgbotapi.Message) {
 		b.mode != "" {
 		b.handleMessage(message)
 	}
+}
+
+func (b *Bot) runResponsesUpdates(update tgbotapi.Update) error {
+	responses, err := b.getResponses(update.Message.Chat.ID)
+	if err != nil && err.Error() != "unauthorized user" {
+		return err
+	}
+
+	for _, response := range responses {
+		me, err := b.getInfoAboutMe(update.Message.Chat.ID)
+		if err != nil {
+			return err
+		}
+
+		err = b.graphqlRepository.UpdateResponseStatus(response.Vacancy.Id, me.UserID, response.State)
+		if err != nil {
+			return err
+		}
+	}
+
+	time.Sleep(time.Hour)
+
+	return nil
 }
