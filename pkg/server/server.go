@@ -56,29 +56,29 @@ func (s *AuthorizationServer) Authorize(chatID int64, authCode string) error {
 		return err
 	}
 
-	sessionErr := s.graphqlRepository.CreateSession(chatID, response.AccessToken, response.RefreshToken)
-	if sessionErr != nil {
-		return sessionErr
-	}
-
-	creationErr := s.createUser(chatID, response.AccessToken)
+	userId, creationErr := s.createUser(chatID, response.AccessToken)
 	if creationErr != nil {
 		return creationErr
+	}
+
+	sessionErr := s.graphqlRepository.CreateSession(chatID, response.AccessToken, response.RefreshToken, userId)
+	if sessionErr != nil {
+		return sessionErr
 	}
 
 	return nil
 }
 
-func (s *AuthorizationServer) createUser(chatID int64, token string) error {
+func (s *AuthorizationServer) createUser(chatID int64, token string) (string, error) {
 	response, err := s.client.GetInfoAboutMe(token)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	err = s.graphqlRepository.CreateUser(chatID, response.Name, response.LastName, response.MiddleName, response.Email, response.Phone, response.UserID)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return response.UserID, nil
 }

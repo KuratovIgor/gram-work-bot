@@ -26,11 +26,12 @@ var getTokenRequest = graphql.NewRequest(`
 `)
 
 var createSessionRequest = graphql.NewRequest(`
-	mutation CreateSession($chat_id: String!, $access_token: String!, $refresh_token: String!) {
-  		loginCreate(data: {chat_id:$chat_id, access_token:$access_token, refresh_token:$refresh_token}) {
+	mutation CreateSession($chat_id: String!, $access_token: String!, $refresh_token: String!, $user_id: String!) {
+  		loginCreate(data: {chat_id:$chat_id, access_token:$access_token, refresh_token:$refresh_token, user_id:$user_id}) {
     		chat_id
     		access_token
     		refresh_token
+			user_id
   		}
 	}
 `)
@@ -43,12 +44,13 @@ var removeSessionRequest = graphql.NewRequest(`
 	}
 `)
 
-func (g *GraphqlRepository) CreateSession(chatId int64, accessToken string, refreshToken string) error {
+func (g *GraphqlRepository) CreateSession(chatId int64, accessToken string, refreshToken string, userId string) error {
 	ctx := context.Background()
 
 	createSessionRequest.Var("chat_id", strconv.FormatInt(chatId, 10))
 	createSessionRequest.Var("access_token", accessToken)
 	createSessionRequest.Var("refresh_token", refreshToken)
+	createSessionRequest.Var("user_id", userId)
 
 	var respData map[string]map[string]string
 	err := g.graphqlClient.Run(ctx, createSessionRequest, &respData)

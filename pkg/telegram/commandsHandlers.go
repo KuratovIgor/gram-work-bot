@@ -3,6 +3,7 @@ package telegram
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"strconv"
+	"time"
 )
 
 const commandStart = "start"
@@ -50,26 +51,6 @@ func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 		if applyErr != nil {
 			return applyErr
 		}
-
-		vacancy, reqErr := b.getVacancy(message.Chat.ID, b.chosenVacancyId)
-		if reqErr != nil {
-			return reqErr
-		}
-
-		salaryFrom, _ := strconv.Atoi(vacancy.Salary.From)
-		salaryTo, _ := strconv.Atoi(vacancy.Salary.To)
-
-		infoAboutMe, infoErr := b.getInfoAboutMe(message.Chat.ID)
-		if infoErr != nil {
-			return infoErr
-		}
-
-		savingErr := b.graphqlRepository.SaveApplyToJob(infoAboutMe.UserID, vacancy.Id, vacancy.Name, vacancy.Employer, vacancy.AlternateUrl, vacancy.Area, "Отклик", salaryFrom, salaryTo, vacancy.PublishedAt)
-		if savingErr != nil {
-			return savingErr
-		}
-
-		b.chosenVacancyId = ""
 	}
 
 	return nil
@@ -96,7 +77,7 @@ func (b *Bot) handleInlineCommand(update tgbotapi.Update) error {
 			return infoErr
 		}
 
-		savingErr := b.graphqlRepository.SaveApplyToJob(infoAboutMe.UserID, vacancy.Id, vacancy.Name, vacancy.Employer, vacancy.AlternateUrl, vacancy.Area, "Отклик", salaryFrom, salaryTo, vacancy.PublishedAt)
+		savingErr := b.graphqlRepository.SaveApplyToJob(infoAboutMe.UserID, vacancy.Id, vacancy.Name, vacancy.Employer, vacancy.AlternateUrl, vacancy.Area, "Отклик", salaryFrom, salaryTo, time.Now().Format("01-02-2006"))
 		if savingErr != nil {
 			return savingErr
 		}

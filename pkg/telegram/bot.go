@@ -129,7 +129,7 @@ func (b *Bot) runResponsesUpdates(update tgbotapi.Update) error {
 		}
 	}
 
-	time.Sleep(time.Hour)
+	time.Sleep(time.Second)
 
 	return nil
 }
