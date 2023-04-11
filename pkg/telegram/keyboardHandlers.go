@@ -2,6 +2,7 @@ package telegram
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"strconv"
 )
 
 func (b *Bot) handleBaseKeyboard(message *tgbotapi.Message) error {
@@ -64,11 +65,34 @@ func (b *Bot) handleFiltersKeyboard(message *tgbotapi.Message) error {
 	case filterCommands[3]:
 		b.openExperienceKeyboard(message)
 	case filterCommands[4]:
+		filters, error := b.graphqlRepository.GetDefaultFilters(message.Chat.ID)
+		if error != nil {
+			return error
+		}
+
+		if filters.Search != "" {
+			b.client.UrlParams.SetSearch(filters.Search)
+		}
+		if filters.Salary != 0 {
+			b.client.UrlParams.SetSalary(strconv.Itoa(filters.Salary))
+		}
+		if filters.Schedule != "" {
+			b.client.UrlParams.SetSchedule(filters.Schedule)
+		}
+		if filters.Experience != "" {
+			b.client.UrlParams.SetExperience(filters.Experience)
+		}
+		if filters.AreaId != "" {
+			b.client.UrlParams.SetArea(filters.AreaId)
+		}
+
+		return b.displayVacancies(message)
+	case filterCommands[5]:
 		b.client.UrlParams.ClearFilters()
 		b.mode = ""
 		error := b.displayVacancies(message)
 		return error
-	case filterCommands[5]:
+	case filterCommands[6]:
 		b.mode = ""
 		b.openVacanciesKeyboard(message)
 	}

@@ -66,6 +66,11 @@ func (s *AuthorizationServer) Authorize(chatID int64, authCode string) error {
 		return sessionErr
 	}
 
+	filterError := s.graphqlRepository.CreateDefaultFilters(chatID)
+	if filterError != nil {
+		return filterError
+	}
+
 	return nil
 }
 

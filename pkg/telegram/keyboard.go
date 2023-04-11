@@ -53,7 +53,7 @@ func (b *Bot) openVacanciesKeyboard(message *tgbotapi.Message) {
 }
 
 // КОМАНДЫ ДЛЯ ФИЛЬТРАЦИИ ВАКАНСИЙ
-var filterCommands = []string{"З/П", "Город", "График", "Опыт", "Сбросить фильтры", "К вакансиям"}
+var filterCommands = []string{"З/П", "Город", "График", "Опыт", "По умолчанию", "Сбросить", "К вакансиям"}
 var filterCommandsKeyboard = tgbotapi.NewReplyKeyboard(
 	tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton(filterCommands[0]),
@@ -64,6 +64,7 @@ var filterCommandsKeyboard = tgbotapi.NewReplyKeyboard(
 	tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton(filterCommands[4]),
 		tgbotapi.NewKeyboardButton(filterCommands[5]),
+		tgbotapi.NewKeyboardButton(filterCommands[6]),
 	),
 )
 
