@@ -5,7 +5,7 @@ import (
 )
 
 func (b *Bot) initAuthorizationProcess(message *tgbotapi.Message) error {
-	authorizeLink, _ := b.client.GetAuthorizationURL(message.Chat.ID)
+	authorizeLink, _ := b.users[message.Chat.ID].GetAuthorizationURL(message.Chat.ID)
 
 	return b.displayAuthorizeMessage(authorizeLink, message)
 }
@@ -20,6 +20,8 @@ func (b *Bot) handleLogout(message *tgbotapi.Message) error {
 	if removeErr != nil {
 		return removeErr
 	}
+
+	delete(b.users, message.Chat.ID)
 
 	msg := tgbotapi.NewMessage(message.Chat.ID, "Работа завершена!\nВозвращайся скорее!")
 

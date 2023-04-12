@@ -8,7 +8,7 @@ import (
 func (b *Bot) handleBaseKeyboard(message *tgbotapi.Message) error {
 	switch message.Text {
 	case baseCommands[0]:
-		b.client.UrlParams.SetPage(0)
+		b.users[message.Chat.ID].UrlParams.SetPage(0)
 		error := b.displayVacancies(message)
 		b.openVacanciesKeyboard(message)
 		return error
@@ -32,7 +32,7 @@ func (b *Bot) handleBaseKeyboard(message *tgbotapi.Message) error {
 func (b *Bot) handleVacanciesKeyboard(message *tgbotapi.Message) error {
 	switch message.Text {
 	case vacanciesCommands[0]:
-		b.client.UrlParams.SetPage(b.client.UrlParams.Page + 1)
+		b.users[message.Chat.ID].UrlParams.SetPage(b.users[message.Chat.ID].UrlParams.Page + 1)
 		error := b.displayVacancies(message)
 		return error
 	case vacanciesCommands[1]:
@@ -43,7 +43,7 @@ func (b *Bot) handleVacanciesKeyboard(message *tgbotapi.Message) error {
 		b.mode = "search"
 	case vacanciesCommands[3]:
 		b.mode = ""
-		b.client.UrlParams.ClearParams()
+		b.users[message.Chat.ID].UrlParams.ClearParams()
 		b.openBaseKeyboard(message)
 	}
 
@@ -71,24 +71,24 @@ func (b *Bot) handleFiltersKeyboard(message *tgbotapi.Message) error {
 		}
 
 		if filters.Search != "" {
-			b.client.UrlParams.SetSearch(filters.Search)
+			b.users[message.Chat.ID].UrlParams.SetSearch(filters.Search)
 		}
 		if filters.Salary != 0 {
-			b.client.UrlParams.SetSalary(strconv.Itoa(filters.Salary))
+			b.users[message.Chat.ID].UrlParams.SetSalary(strconv.Itoa(filters.Salary))
 		}
 		if filters.Schedule != "" {
-			b.client.UrlParams.SetSchedule(filters.Schedule)
+			b.users[message.Chat.ID].UrlParams.SetSchedule(filters.Schedule)
 		}
 		if filters.Experience != "" {
-			b.client.UrlParams.SetExperience(filters.Experience)
+			b.users[message.Chat.ID].UrlParams.SetExperience(filters.Experience)
 		}
 		if filters.AreaId != "" {
-			b.client.UrlParams.SetArea(filters.AreaId)
+			b.users[message.Chat.ID].UrlParams.SetArea(filters.AreaId)
 		}
 
 		return b.displayVacancies(message)
 	case filterCommands[5]:
-		b.client.UrlParams.ClearFilters()
+		b.users[message.Chat.ID].UrlParams.ClearFilters()
 		b.mode = ""
 		error := b.displayVacancies(message)
 		return error

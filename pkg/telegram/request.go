@@ -10,7 +10,7 @@ func (b *Bot) getInfoAboutMe(chatId int64) (*headhunter.MeType, error) {
 		return nil, tokenErr
 	}
 
-	info, resErr := b.client.GetInfoAboutMe(token)
+	info, resErr := b.users[chatId].GetInfoAboutMe(token)
 	if resErr != nil {
 		return nil, resErr
 	}
@@ -24,7 +24,7 @@ func (b *Bot) getVacancies(chatId int64) ([]headhunter.Vacancy, error) {
 		return nil, tokenErr
 	}
 
-	vacancies, resErr := b.client.GetVacancies(token)
+	vacancies, resErr := b.users[chatId].GetVacancies(token)
 	if resErr != nil {
 		return nil, resErr
 	}
@@ -38,7 +38,7 @@ func (b *Bot) getVacancy(chatId int64, vacancyId string) (*headhunter.Vacancy, e
 		return nil, tokenErr
 	}
 
-	vacancy, resErr := b.client.GetVacancy(vacancyId, token)
+	vacancy, resErr := b.users[chatId].GetVacancy(vacancyId, token)
 	if resErr != nil {
 		return nil, resErr
 	}
@@ -52,7 +52,7 @@ func (b *Bot) getResumes(chatId int64) ([]headhunter.Resume, error) {
 		return nil, tokenErr
 	}
 
-	resumes, err := b.client.GetResumes(token)
+	resumes, err := b.users[chatId].GetResumes(token)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (b *Bot) getResponses(chatId int64) ([]headhunter.Response, error) {
 		return nil, tokenErr
 	}
 
-	responses, err := b.client.GetResponseList(token)
+	responses, err := b.users[chatId].GetResponseList(token)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func (b *Bot) getResumesIds(chatId int64) ([]string, error) {
 		return nil, tokenErr
 	}
 
-	resumesIds, err := b.client.GetResumesIds(token)
+	resumesIds, err := b.users[chatId].GetResumesIds(token)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func (b *Bot) applyToJob(chatId int64, vacancyId string, resumeId string, messag
 		return tokenErr
 	}
 
-	return b.client.ApplyToJob(vacancyId, resumeId, message, token)
+	return b.users[chatId].ApplyToJob(vacancyId, resumeId, message, token)
 }
 
 func (b *Bot) logout(chatId int64) error {
@@ -103,5 +103,5 @@ func (b *Bot) logout(chatId int64) error {
 		return tokenErr
 	}
 
-	return b.client.Logout(token)
+	return b.users[chatId].Logout(token)
 }

@@ -5,12 +5,14 @@ import (
 	"github.com/KuratovIgor/gram-work-bot/pkg/repository"
 	headhunter "github.com/KuratovIgor/head_hunter_sdk"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"log"
 	"time"
 )
 
 type (
 	Bot struct {
 		bot               *tgbotapi.BotAPI
+		config            *config.Config
 		client            *headhunter.Client
 		messages          config.Messages
 		mode              string
@@ -18,12 +20,14 @@ type (
 		applyMessage      string
 		graphqlRepository repository.GraphqlRepository
 		lkUrl             string
+		users             map[int64]*headhunter.Client
 	}
 )
 
-func NewBot(bot *tgbotapi.BotAPI, client *headhunter.Client, messages config.Messages, graphqlRepository repository.GraphqlRepository, lkUrl string) *Bot {
+func NewBot(bot *tgbotapi.BotAPI, cfg *config.Config, client *headhunter.Client, messages config.Messages, graphqlRepository repository.GraphqlRepository, lkUrl string) *Bot {
 	return &Bot{
 		bot:               bot,
+		config:            cfg,
 		client:            client,
 		messages:          messages,
 		mode:              "",
@@ -31,6 +35,7 @@ func NewBot(bot *tgbotapi.BotAPI, client *headhunter.Client, messages config.Mes
 		applyMessage:      "",
 		graphqlRepository: graphqlRepository,
 		lkUrl:             lkUrl,
+		users:             map[int64]*headhunter.Client{},
 	}
 }
 
@@ -59,6 +64,7 @@ func (b *Bot) initUpdatesChannel() (tgbotapi.UpdatesChannel, error) {
 
 func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 	//quit := make(chan bool)
+
 	for update := range updates {
 		if update.CallbackQuery != nil {
 			b.handleInlineCommand(update)
@@ -71,7 +77,18 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 
 		_, err := b.getAccessToken(update.Message.Chat.ID)
 		if err != nil {
-			b.initAuthorizationProcess(update.Message)
+			headhunterClient, err := headhunter.NewClient(b.config.ClientID, b.config.ClientSecret, b.config.RedirectURI)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			b.users[update.Message.Chat.ID] = headhunterClient
+
+			authErr := b.initAuthorizationProcess(update.Message)
+			if authErr != nil {
+				delete(b.users, update.Message.Chat.ID)
+				log.Fatal(err)
+			}
 
 			go func() {
 				upt := update

@@ -19,7 +19,7 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleStartCommand(message *tgbotapi.Message) error {
-	b.client.UrlParams.ClearParams()
+	b.users[message.Chat.ID].UrlParams.ClearParams()
 
 	_, err := b.getAccessToken(message.Chat.ID)
 	if err != nil {
