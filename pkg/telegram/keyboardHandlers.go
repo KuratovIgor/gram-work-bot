@@ -88,7 +88,7 @@ func (b *Bot) handleFiltersKeyboard(message *tgbotapi.Message) error {
 
 		return b.displayVacancies(message)
 	case filterCommands[5]:
-		b.users[message.Chat.ID].UrlParams.ClearFilters()
+		b.users[message.Chat.ID].UrlParams.ClearParams()
 		b.mode = ""
 		error := b.displayVacancies(message)
 		return error
