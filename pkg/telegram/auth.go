@@ -36,3 +36,7 @@ func (b *Bot) handleLogout(message *tgbotapi.Message) error {
 func (b *Bot) getAccessToken(chatID int64) (string, error) {
 	return b.graphqlRepository.GetAccessToken(chatID)
 }
+
+func (b *Bot) getSessions() ([]int64, error) {
+	return b.graphqlRepository.GetSessions()
+}

@@ -50,6 +50,20 @@ func (b *Bot) Start() error {
 
 	AllAreas, _ = b.client.GetAllAreas()
 
+	chatIds, error := b.getSessions()
+	if error != nil {
+		return error
+	}
+
+	for _, chatId := range chatIds {
+		headhunterClient, clientErr := headhunter.NewClient(b.config.ClientID, b.config.ClientSecret, b.config.RedirectURI)
+		if clientErr != nil {
+			return clientErr
+		}
+
+		b.users[chatId] = headhunterClient
+	}
+
 	b.handleUpdates(updates)
 
 	return nil

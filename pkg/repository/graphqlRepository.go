@@ -10,6 +10,7 @@ type DefaultFilterType struct {
 
 type GraphqlRepository interface {
 	GetAccessToken(chatId int64) (string, error)
+	GetSessions() ([]int64, error)
 	CreateSession(chatId int64, accessToken string, refreshToken string, userId string) error
 	RemoveSession(chatId int64) error
 	CreateUser(chatId int64, name string, lastname string, middlename string, email string, phone string, userId string) error

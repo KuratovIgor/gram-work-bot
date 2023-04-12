@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/machinebox/graphql"
+	"log"
 	"strconv"
 )
 
@@ -21,6 +22,16 @@ var getTokenRequest = graphql.NewRequest(`
     		id
     		access_token
     		refresh_token
+  		}
+	}
+`)
+
+var getSessionsRequest = graphql.NewRequest(`
+	query GetSessions {
+  		loginsList {
+			items {
+    			chat_id
+			}
   		}
 	}
 `)
@@ -43,6 +54,26 @@ var removeSessionRequest = graphql.NewRequest(`
   		}
 	}
 `)
+
+func (g *GraphqlRepository) GetSessions() ([]int64, error) {
+	ctx := context.Background()
+
+	var respData map[string]map[string][]map[string]string
+	err := g.graphqlClient.Run(ctx, getSessionsRequest, &respData)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	chatIds := []int64{}
+
+	for _, item := range respData["loginsList"]["items"][0] {
+		chatId, _ := strconv.ParseInt(item, 10, 64)
+		chatIds = append(chatIds, chatId)
+	}
+
+	return chatIds, nil
+}
 
 func (g *GraphqlRepository) CreateSession(chatId int64, accessToken string, refreshToken string, userId string) error {
 	ctx := context.Background()
