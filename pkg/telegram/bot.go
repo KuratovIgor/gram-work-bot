@@ -127,12 +127,41 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 }
 
 func (b *Bot) handleKeyboards(message *tgbotapi.Message) {
-	b.handleBaseKeyboard(message)
-	b.handleVacanciesKeyboard(message)
-	b.handleFiltersKeyboard(message)
-	b.handleScheduleKeyboard(message)
-	b.handleExperienceKeyboard(message)
-	b.handleCancelMessageKeyboard(message)
+	err := b.handleBaseKeyboard(message)
+	if err != nil {
+		log.Println(err)
+		log.Panic(err)
+	}
+
+	err = b.handleVacanciesKeyboard(message)
+	if err != nil {
+		log.Println(err)
+		log.Panic(err)
+	}
+
+	err = b.handleFiltersKeyboard(message)
+	if err != nil {
+		log.Println(err)
+		log.Panic(err)
+	}
+
+	err = b.handleScheduleKeyboard(message)
+	if err != nil {
+		log.Println(err)
+		log.Panic(err)
+	}
+
+	err = b.handleExperienceKeyboard(message)
+	if err != nil {
+		log.Println(err)
+		log.Panic(err)
+	}
+
+	err = b.handleCancelMessageKeyboard(message)
+	if err != nil {
+		log.Println(err)
+		log.Panic(err)
+	}
 
 	if !Contains(baseCommands, message.Text) &&
 		!Contains(vacanciesCommands, message.Text) &&

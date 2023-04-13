@@ -2,6 +2,7 @@ package telegram
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"log"
 	"strconv"
 )
 
@@ -10,6 +11,7 @@ func (b *Bot) handleBaseKeyboard(message *tgbotapi.Message) error {
 	case baseCommands[0]:
 		b.users[message.Chat.ID].UrlParams.SetPage(0)
 		error := b.displayVacancies(message)
+		log.Println(b.users)
 		b.openVacanciesKeyboard(message)
 		return error
 	case baseCommands[1]:
