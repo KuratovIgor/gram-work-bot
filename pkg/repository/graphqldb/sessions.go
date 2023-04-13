@@ -67,9 +67,11 @@ func (g *GraphqlRepository) GetSessions() ([]int64, error) {
 
 	chatIds := []int64{}
 
-	for _, item := range respData["loginsList"]["items"][0] {
-		chatId, _ := strconv.ParseInt(item, 10, 64)
-		chatIds = append(chatIds, chatId)
+	for _, item := range respData["loginsList"]["items"] {
+		for _, chatId := range item {
+			chatId, _ := strconv.ParseInt(chatId, 10, 64)
+			chatIds = append(chatIds, chatId)
+		}
 	}
 
 	return chatIds, nil
