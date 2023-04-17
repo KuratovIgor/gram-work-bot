@@ -2,12 +2,12 @@ package telegram
 
 import (
 	"fmt"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"strconv"
 )
 
 const (
-	resumeMessage = "%s, %s\n\nДОЛЖНОСТЬ\n%s    %s\n\nГОРОД\n%s\n\nОБРАЗОВНАИЕ\n%s"
+	resumeMessage = "%s, %s\n\n*ДОЛЖНОСТЬ*\n%s    %s\n\n*ГОРОД*\n%s\n\n*ОБРАЗОВНАИЕ*\n%s"
 )
 
 func (b *Bot) displayAuthorizeMessage(authorizeLink string, message *tgbotapi.Message) error {
@@ -31,6 +31,7 @@ func (b *Bot) displayVacancies(message *tgbotapi.Message) error {
 		messageTemplate := getVacancyMessageTemplate(vacancy)
 
 		msg := tgbotapi.NewMessage(message.Chat.ID, messageTemplate)
+		msg.ParseMode = "markdown"
 
 		vacancyKeyboard := b.getVacancyKeyboard(vacancy)
 		msg.ReplyMarkup = vacancyKeyboard
@@ -54,6 +55,7 @@ func (b *Bot) displayMyResumes(message *tgbotapi.Message) error {
 
 	for _, resume := range resumes {
 		msg := tgbotapi.NewMessage(message.Chat.ID, fmt.Sprintf(resumeMessage, resume.Name, resume.Age, resume.Title, resume.Salary, resume.Area, resume.Education))
+		msg.ParseMode = "markdown"
 
 		resumeButton := b.getOpeningResumeButton(resume)
 		msg.ReplyMarkup = resumeButton
@@ -77,6 +79,7 @@ func (b *Bot) displayMyResponses(message *tgbotapi.Message) error {
 		messageTemplate := getResponseMessageTemplate(response)
 
 		msg := tgbotapi.NewMessage(message.Chat.ID, messageTemplate)
+		msg.ParseMode = "markdown"
 
 		_, sendErr := b.bot.Send(msg)
 		if sendErr != nil {
@@ -112,7 +115,8 @@ func (b *Bot) displayChoosingResume(message *tgbotapi.Message) error {
 func (b *Bot) displayLKUrl(message *tgbotapi.Message) error {
 	lkUrlButton := b.getLKUrlButton()
 
-	msg := tgbotapi.NewMessage(message.Chat.ID, "Для входа в личный кабинет тебе необходимо перейти по ссылке ниже.\nПри авторизации необходимо использовать данный код:\n"+strconv.Itoa(int(message.Chat.ID)))
+	msg := tgbotapi.NewMessage(message.Chat.ID, "Для входа в личный кабинет тебе необходимо перейти по ссылке ниже.\n\nПри авторизации необходимо использовать данный код:\n\n"+"*"+strconv.Itoa(int(message.Chat.ID))+"*")
+	msg.ParseMode = "markdown"
 	msg.ReplyMarkup = lkUrlButton
 
 	_, sendErr := b.bot.Send(msg)

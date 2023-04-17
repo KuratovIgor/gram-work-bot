@@ -1,21 +1,17 @@
 package telegram
 
 import (
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 )
 
 // ГЛАВНЫЕ КОМАНДЫ
-var baseCommands = []string{"Поиск вакансий", "Мои резюме", "Мои отклики", "Личный кабинет", "Завершить поиск"}
+var baseCommands = []string{"Поиск вакансий", "Мои резюме", "Мои отклики"}
 var baseCommandsKeyboard = tgbotapi.NewReplyKeyboard(
 	tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton(baseCommands[0]),
 		tgbotapi.NewKeyboardButton(baseCommands[1]),
 		tgbotapi.NewKeyboardButton(baseCommands[2]),
-	),
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton(baseCommands[3]),
-		tgbotapi.NewKeyboardButton(baseCommands[4]),
 	),
 )
 

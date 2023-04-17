@@ -4,7 +4,7 @@ import (
 	"github.com/KuratovIgor/gram-work-bot/pkg/config"
 	"github.com/KuratovIgor/gram-work-bot/pkg/repository"
 	headhunter "github.com/KuratovIgor/head_hunter_sdk"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"time"
 )
@@ -42,11 +42,7 @@ func NewBot(bot *tgbotapi.BotAPI, cfg *config.Config, client *headhunter.Client,
 var AllAreas []headhunter.AreaType
 
 func (b *Bot) Start() error {
-	updates, err := b.initUpdatesChannel()
-
-	if err != nil {
-		return err
-	}
+	updates := b.initUpdatesChannel()
 
 	AllAreas, _ = b.client.GetAllAreas()
 
@@ -69,7 +65,7 @@ func (b *Bot) Start() error {
 	return nil
 }
 
-func (b *Bot) initUpdatesChannel() (tgbotapi.UpdatesChannel, error) {
+func (b *Bot) initUpdatesChannel() tgbotapi.UpdatesChannel {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
@@ -78,6 +74,30 @@ func (b *Bot) initUpdatesChannel() (tgbotapi.UpdatesChannel, error) {
 
 func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 	//quit := make(chan bool)
+
+	conf := tgbotapi.NewSetMyCommands(
+		tgbotapi.BotCommand{
+			Command:     "start",
+			Description: "Начать работу",
+		},
+		tgbotapi.BotCommand{
+			Command:     "help",
+			Description: "Помощь",
+		},
+		tgbotapi.BotCommand{
+			Command:     "lk",
+			Description: "Войти в личный кабинет",
+		},
+		tgbotapi.BotCommand{
+			Command:     "logout",
+			Description: "Завершить поиск",
+		},
+	)
+
+	_, error := b.bot.Request(conf)
+	if error != nil {
+		log.Panic(error)
+	}
 
 	for update := range updates {
 		if update.CallbackQuery != nil {

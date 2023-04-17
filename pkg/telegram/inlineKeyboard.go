@@ -2,7 +2,7 @@ package telegram
 
 import (
 	headhunter "github.com/KuratovIgor/head_hunter_sdk"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 func (b *Bot) getAuthorizeButton(authorizeLink string) tgbotapi.InlineKeyboardMarkup {

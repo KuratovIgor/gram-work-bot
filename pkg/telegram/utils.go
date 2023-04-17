@@ -65,19 +65,19 @@ func getVacancyMessageTemplate(vacancy headhunter.Vacancy) string {
 	var responsibilityString string
 
 	if len(vacancy.Responsibility) > 0 {
-		responsibilityString = "ОПИСАНИЕ:\n%s\n\n"
+		responsibilityString = "*ОПИСАНИЕ*:\n%s\n\n"
 	}
 
 	if len(vacancy.Salary.From) > 0 && len(vacancy.Salary.To) > 0 {
-		salaryString = "ЗАРПЛАТА:\n от %s до %s %s\n\n"
+		salaryString = "*ЗАРПЛАТА*:\n от %s до %s %s\n\n"
 	} else {
-		salaryString = "ЗАРПЛАТА:\n %s %s\n\n"
+		salaryString = "*ЗАРПЛАТА*:\n %s %s\n\n"
 	}
 
 	time, _ := time.Parse("2006-01-02T15:04:05-0700", vacancy.PublishedAt)
 	publishedDate := time.Format("02 January 2006")
 
-	messageTemplate = "ДОЛЖНОСТЬ:\n%s\n\n" + salaryString + "ГОРОД:\n%s\n\nРАБОТОДАТЕЛЬ:\n%s\n\n" + responsibilityString + "ТРЕБОВАНИЯ:\n%s\n\nГРАФИК:\n%s\n\nОПУБЛИКОВАНО:\n%s"
+	messageTemplate = "*ДОЛЖНОСТЬ*:\n%s\n\n" + salaryString + "*ГОРОД*:\n%s\n\n*РАБОТОДАТЕЛЬ*:\n%s\n\n" + responsibilityString + "*ТРЕБОВАНИЯ*:\n%s\n\n*ГРАФИК*:\n%s\n\n*ОПУБЛИКОВАНО*:\n%s"
 
 	if len(vacancy.Salary.From) > 0 && len(vacancy.Salary.To) > 0 {
 		if len(responsibilityString) > 0 {
@@ -119,12 +119,12 @@ func getResponseMessageTemplate(response headhunter.Response) string {
 	var salaryString string
 
 	if len(response.Vacancy.Salary.From) > 0 && len(response.Vacancy.Salary.To) > 0 {
-		salaryString = "ЗАРПЛАТА:\n от %s до %s %s\n\n"
+		salaryString = "*ЗАРПЛАТА*:\n от %s до %s %s\n\n"
 	} else {
-		salaryString = "ЗАРПЛАТА:\n %s %s\n\n"
+		salaryString = "*ЗАРПЛАТА*:\n %s %s\n\n"
 	}
 
-	messageTemplate = "ДОЛЖНОСТЬ:\n%s\n\n" + salaryString + "ГОРОД:\n%s\n\nРАБОТОДАТЕЛЬ\n%s\n\n%s\n\nСТАТУС: %s"
+	messageTemplate = "*ДОЛЖНОСТЬ*:\n%s\n\n" + salaryString + "*ГОРОД*:\n%s\n\n*РАБОТОДАТЕЛЬ*:\n%s\n\n%s\n\n*СТАТУС*:    %s"
 
 	if len(response.Vacancy.Salary.From) > 0 && len(response.Vacancy.Salary.To) > 0 {
 		return fmt.Sprintf(messageTemplate, response.Vacancy.Name, response.Vacancy.Salary.From, response.Vacancy.Salary.To,

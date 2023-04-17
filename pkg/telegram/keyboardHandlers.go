@@ -1,7 +1,7 @@
 package telegram
 
 import (
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"strconv"
 )
@@ -15,17 +15,9 @@ func (b *Bot) handleBaseKeyboard(message *tgbotapi.Message) error {
 		b.openVacanciesKeyboard(message)
 		return error
 	case baseCommands[1]:
-		error := b.displayMyResumes(message)
-		return error
+		return b.displayMyResumes(message)
 	case baseCommands[2]:
-		error := b.displayMyResponses(message)
-		return error
-	case baseCommands[3]:
-		error := b.displayLKUrl(message)
-		return error
-	case baseCommands[4]:
-		error := b.handleLogout(message)
-		return error
+		return b.displayMyResponses(message)
 	}
 
 	return nil
