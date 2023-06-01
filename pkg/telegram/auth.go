@@ -33,6 +33,25 @@ func (b *Bot) handleLogout(message *tgbotapi.Message) error {
 	return nil
 }
 
+func (b *Bot) handleRelogin(message *tgbotapi.Message) error {
+	resErr := b.logout(message.Chat.ID)
+	if resErr != nil {
+		return resErr
+	}
+
+	removeErr := b.graphqlRepository.RemoveSession(message.Chat.ID)
+	if removeErr != nil {
+		return removeErr
+	}
+
+	startError := b.initAuthorizationProcess(message)
+	if startError != nil {
+		return startError
+	}
+
+	return nil
+}
+
 func (b *Bot) getAccessToken(chatID int64) (string, error) {
 	return b.graphqlRepository.GetAccessToken(chatID)
 }
