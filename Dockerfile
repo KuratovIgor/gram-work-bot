@@ -8,7 +8,7 @@ WORKDIR /github.com/KuratovIgor/gram-work-bot/
 RUN go mod download
 RUN GOOS=linux go build -o ./.bin/bot ./cmd/bot/main.go
 
-FROM alpine:latest
+FROM alpine:3.18.3
 
 WORKDIR /root/
 
